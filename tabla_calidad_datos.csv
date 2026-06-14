@@ -1,0 +1,14 @@
+﻿columna,tipo_dato,rol,valores_unicos,faltantes_originales,anomalias_iqr,calidad,observacion_calidad,tratamiento
+id_persona,Identificador,Llave del registro,374,0,0,Alta,Sin problemas relevantes detectados,Excluir del modelo
+genero,Categórico binario,Variable descriptiva,2,0,0,Alta,Sin problemas relevantes detectados,Codificar 0/1
+edad,Numérico,Característica,31,0,0,Alta,Sin problemas relevantes detectados,Normalizar 0 a 1
+ocupacion,Texto/categórico nominal,Característica,11,0,0,Alta,Sin problemas relevantes detectados,One-hot encoding
+duracion_sueno_horas,Numérico continuo,Característica,27,0,0,Alta,Sin problemas relevantes detectados,Normalizar 0 a 1
+calidad_sueno,Ordinal numérico,Característica,6,0,0,Alta,Sin problemas relevantes detectados,Agrupar y normalizar
+nivel_actividad_fisica,Numérico,Característica,16,0,0,Alta,Sin problemas relevantes detectados,Normalizar 0 a 1
+nivel_estres,Ordinal numérico,Característica,6,0,0,Alta,Sin problemas relevantes detectados,Agrupar y normalizar
+categoria_imc,Categórico ordinal,Característica,4,0,0,"Media antes de limpiar, alta después",Normal y Peso normal expresan el mismo nivel,Limpiar y codificar
+presion_arterial,Texto compuesto,Característica,25,0,0,Alta después de separar,Variable compuesta en formato sistólica/diastólica,Separar en sistólica y diastólica
+frecuencia_cardiaca,Numérico,Característica,19,0,15,Media: revisar valores extremos,15 posibles anomalías por IQR,Normalizar y revisar IQR
+pasos_diarios,Numérico,Característica,20,0,0,Alta,Sin problemas relevantes detectados,Normalizar 0 a 1
+trastorno_sueno,Categórico nominal,Objetivo o etiqueta,3,219,0,"Media antes de imputar, alta después",Valores vacíos semánticos: se imputan como Ninguno,Imputar Ninguno y binarizar

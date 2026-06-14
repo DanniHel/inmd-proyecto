@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espacio Latente - Sleep Health</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#eef2f6;color:#1f2937;overflow:hidden;height:100vh}
+.header{min-height:54px;background:#172033;color:#fff;padding:10px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;border-bottom:3px solid #2f9c95;flex-wrap:wrap}
+.header h1{font-size:18px;font-weight:700;letter-spacing:0}
+.header-right{display:flex;align-items:center;gap:12px}
+.header-right span{font-size:12px;color:#cfd7e3;text-align:right}
+#filter-toggle{background:#2a3a5c;color:#cfd7e3;border:1px solid #3f5277;border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer;white-space:nowrap}
+#filter-toggle:hover{background:#3f5277;color:#fff}
+#filter-panel{overflow:hidden;max-height:0;transition:max-height 0.25s ease;background:#e2e8f0;border-bottom:1px solid #cbd5e1}
+#filter-panel.open{max-height:300px}
+.filter-inner{padding:8px 16px 10px;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start}
+.filter-group{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+.filter-group>label{font-size:11px;font-weight:700;color:#354052;margin-right:2px}
+.filter-checkbox{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:#354052;cursor:pointer;padding:2px 6px;border-radius:3px;background:#fff;border:1px solid #cbd5e1}
+.filter-checkbox:hover{border-color:#2f9c95}
+.filter-checkbox input[type="checkbox"]{margin:0;width:12px;height:12px;cursor:pointer}
+.filter-checkbox.active{background:#e9f4f3;border-color:#2f9c95}
+.filter-range{display:flex;align-items:center;gap:4px;font-size:11px;color:#354052}
+.filter-range input[type="range"]{width:80px;cursor:pointer}
+.filter-range .rval{min-width:22px;text-align:center;font-weight:700;font-size:11px}
+.grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:4px;height:calc(100vh - 54px);padding:4px}
+.quad{background:#fff;border:1px solid #dce3ec;border-radius:6px;overflow:hidden;position:relative;display:flex;flex-direction:column;min-width:0}
+.quad-title{min-height:38px;font-size:12px;font-weight:700;color:#354052;padding:7px 11px;border-bottom:1px solid #e8edf3;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0}
+.quad-title span{white-space:nowrap}
+.quad-body{flex:1;position:relative;overflow:hidden;min-height:0}
+.controls-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+.controls-row label{font-size:11px;font-weight:600;color:#687386}
+.controls-row select{font-size:11px;padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;background:#fff;color:#243044;cursor:pointer;max-width:145px}
+.controls-row select:hover{border-color:#2f9c95}
+.tooltip{position:absolute;background:rgba(17,24,39,.92);color:#fff;padding:7px 10px;border-radius:4px;font-size:11px;line-height:1.45;pointer-events:none;opacity:0;z-index:100;white-space:nowrap}
+.axis-label{font-size:10px;fill:#7a8493}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:11px;color:#4b5563}
+.legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.details-scroll{height:100%;padding:12px;overflow-y:auto}
+.empty-state{height:150px;border:1px dashed #cbd5e1;border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;color:#7a8493;font-size:13px;padding:18px;line-height:1.4}
+.profile-card{border:1px solid #dfe7ef;border-radius:6px;background:#fbfcfe;padding:12px}
+.profile-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #e8edf3}
+.profile-head h4{font-size:15px;line-height:1.25;color:#172033;margin-top:2px}
+.detail-kicker{display:block;font-size:10px;color:#687386;font-weight:800;text-transform:uppercase}
+.badge{display:inline-flex;align-items:center;justify-content:center;padding:5px 9px;border-radius:999px;color:#fff;font-size:11px;font-weight:800;white-space:nowrap}
+.badge.ninguno{background:#2f6f9f}
+.badge.insomnio{background:#c94c4c}
+.badge.apnea-del-sueno{background:#5c8f3f}
+.badge.sin-dato{background:#6b7280}
+.profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.profile-field{border:1px solid #edf1f5;border-radius:6px;background:#fff;padding:7px 8px;min-height:52px}
+.profile-field span{display:block;font-size:10px;color:#687386;text-transform:uppercase;margin-bottom:3px;font-weight:700}
+.profile-field strong{display:block;font-size:13px;color:#1f2937;line-height:1.25;word-break:break-word}
+.status-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.status-chip{border-radius:999px;padding:4px 8px;font-size:11px;font-weight:700;background:#e9f4f3;color:#1f6f69}
+.status-chip.warning{background:#fff1d6;color:#8a5a00}
+.method-notes{font-size:11px;color:#7a8493;line-height:1.45}
+.method-notes p{margin-bottom:4px}
+.hint{padding:20px;text-align:center;color:#8a95a5;font-size:13px}
+@media(max-width:520px){
+body{overflow:auto;height:auto}
+.header{height:auto;align-items:flex-start;flex-direction:column}
+.header span{text-align:left}
+.header-right{width:100%;justify-content:space-between}
+.grid{grid-template-columns:1fr;grid-template-rows:repeat(4,330px);height:auto;min-height:calc(100vh - 54px)}
+.quad-title{align-items:flex-start;flex-direction:column}
+.controls-row{justify-content:flex-start}
+.profile-grid{grid-template-columns:1fr}
+.filter-inner{flex-direction:column;gap:8px}
+}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>Espacio Latente - Sleep Health</h1>
+<div class="header-right">
+<span id="data-summary">Cargando datos...</span>
+<button id="filter-toggle">Filtros ▾</button>
+</div>
+</div>
+
+<div id="filter-panel">
+<div class="filter-inner">
+<div class="filter-group">
+<label>Trastorno:</label>
+<label class="filter-checkbox active"><input type="checkbox" value="Ninguno" checked onchange="onFilterChange()"> Ninguno</label>
+<label class="filter-checkbox active"><input type="checkbox" value="Insomnio" checked onchange="onFilterChange()"> Insomnio</label>
+<label class="filter-checkbox active"><input type="checkbox" value="Apnea del sueño" checked onchange="onFilterChange()"> Apnea</label>
+</div>
+<div class="filter-group">
+<label>Género:</label>
+<label class="filter-checkbox active"><input type="checkbox" value="Hombre" checked onchange="onFilterChange()"> Hombre</label>
+<label class="filter-checkbox active"><input type="checkbox" value="Mujer" checked onchange="onFilterChange()"> Mujer</label>
+</div>
+<div class="filter-group">
+<label>Anomalía IQR:</label>
+<select id="filter-anomaly" onchange="onFilterChange()" style="font-size:11px;padding:3px 6px;border:1px solid #cbd5e1;border-radius:3px;background:#fff;color:#354052">
+<option value="all">Todas</option>
+<option value="anomaly">Solo anomalías</option>
+<option value="normal">Sin anomalías</option>
+</select>
+</div>
+<div class="filter-group">
+<label>Edad:</label>
+<div class="filter-range">
+<input type="range" id="filter-edad-min" min="27" max="59" value="27" oninput="onFilterChange()">
+<span class="rval" id="filter-edad-min-val">27</span>
+<span>—</span>
+<input type="range" id="filter-edad-max" min="27" max="59" value="59" oninput="onFilterChange()">
+<span class="rval" id="filter-edad-max-val">59</span>
+</div>
+</div>
+<div class="filter-group">
+<label>Calidad sueño:</label>
+<div class="filter-range">
+<input type="range" id="filter-calidad-min" min="0" max="10" value="0" oninput="onFilterChange()">
+<span class="rval" id="filter-calidad-min-val">0</span>
+<span>—</span>
+<input type="range" id="filter-calidad-max" min="0" max="10" value="10" oninput="onFilterChange()">
+<span class="rval" id="filter-calidad-max-val">10</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="grid">
+<div class="quad" id="quad-scatter">
+<div class="quad-title">
+<span>Cuadrante 1: Espacio latente X,Y</span>
+<div class="controls-row">
+<label for="select-tech">Tecnica:</label>
+<select id="select-tech">
+<option value="pca">PCA</option>
+<option value="tsne">t-SNE / TSNET</option>
+<option value="umap">UMAP / ELMAP</option>
+</select>
+</div>
+</div>
+<div class="quad-body" id="scatter-container"></div>
+</div>
+
+<div class="quad" id="quad-bar">
+<div class="quad-title">
+<span>Cuadrante 2: Dos atributos en barras</span>
+<div class="controls-row">
+<label for="select-attr1">Atributo 1:</label>
+<select id="select-attr1"><option value="">Seleccionar</option></select>
+<label for="select-attr2">Atributo 2:</label>
+<select id="select-attr2"><option value="">Seleccionar</option></select>
+</div>
+</div>
+<div class="quad-body" id="bar-container"></div>
+</div>
+
+<div class="quad" id="quad-hist">
+<div class="quad-title">
+<span>Cuadrante 3: Histograma de usuarios</span>
+<div class="controls-row">
+<label for="select-hist">Feature:</label>
+<select id="select-hist"><option value="">Seleccionar</option></select>
+</div>
+</div>
+<div class="quad-body" id="hist-container"></div>
+</div>
+
+<div class="quad" id="quad-details">
+<div class="quad-title"><span>Cuadrante 4: Detalles a demanda</span></div>
+<div class="quad-body">
+<div class="details-scroll">
+<div id="legend-container" class="legend"></div>
+<div id="panel-detalles">
+<div class="empty-state">Seleccione un punto del espacio latente para ver el perfil completo del empleado.</div>
+</div>
+<div id="var-exp-container" style="margin-top:10px;font-size:11px;color:#687386"></div>
+<hr style="margin:12px 0;border:0;border-top:1px solid #edf1f5">
+<div class="method-notes">
+<p><strong>PCA:</strong> proyeccion lineal que conserva maxima varianza.</p>
+<p><strong>t-SNE / TSNET:</strong> conserva vecindarios locales para ver agrupamientos.</p>
+<p><strong>UMAP / ELMAP:</strong> organiza la estructura local-global del espacio latente.</p>
+<p>El clic enlaza el punto D3 con el registro original del CSV.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const TOOLTIP = d3.select("#tooltip");
+const MARGIN = {t: 20, r: 20, b: 35, l: 45};
+let DATA = null;
+let selectedId = null;
+
+function getTech() {
+  return document.getElementById("select-tech").value;
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[ch]));
+}
+
+function formatValue(value, suffix = "") {
+  if (value === null || value === undefined || value === "") return "Sin dato";
+  if (typeof value === "number") {
+    const formatted = Number.isInteger(value) ? value.toString() : value.toFixed(1);
+    return `${formatted}${suffix}`;
+  }
+  return `${escapeHTML(value)}${suffix}`;
+}
+
+function badgeClass(value) {
+  return String(value || "sin dato")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "") || "sin-dato";
+}
+
+function selectedRecord() {
+  return DATA.registros.find(r => r.id === selectedId) || null;
+}
+
+/* ── Filtros interactivos ── */
+let filterState = {};
+
+function readFilterState() {
+  const trastorno = [];
+  document.querySelectorAll('#filter-panel .filter-group:first-child input[type="checkbox"]:checked').forEach(cb => trastorno.push(cb.value));
+  const genero = [];
+  document.querySelectorAll('#filter-panel .filter-group:nth-child(2) input[type="checkbox"]:checked').forEach(cb => genero.push(cb.value));
+  filterState = {
+    trastorno,
+    genero,
+    anomalia: document.getElementById('filter-anomaly').value,
+    edadMin: +document.getElementById('filter-edad-min').value,
+    edadMax: +document.getElementById('filter-edad-max').value,
+    calidadMin: +document.getElementById('filter-calidad-min').value,
+    calidadMax: +document.getElementById('filter-calidad-max').value,
+  };
+  document.getElementById('filter-edad-min-val').textContent = filterState.edadMin;
+  document.getElementById('filter-edad-max-val').textContent = filterState.edadMax;
+  document.getElementById('filter-calidad-min-val').textContent = filterState.calidadMin;
+  document.getElementById('filter-calidad-max-val').textContent = filterState.calidadMax;
+}
+
+function isRecordVisible(r) {
+  if (!filterState.trastorno.includes(r.trastorno)) return false;
+  if (r.genero && !filterState.genero.includes(r.genero)) return false;
+  if (filterState.anomalia === 'anomaly' && Number(r.tiene_anomalia_iqr) !== 1) return false;
+  if (filterState.anomalia === 'normal' && Number(r.tiene_anomalia_iqr) === 1) return false;
+  if (r.edad != null && (r.edad < filterState.edadMin || r.edad > filterState.edadMax)) return false;
+  if (r.calidad_sueno != null && (r.calidad_sueno < filterState.calidadMin || r.calidad_sueno > filterState.calidadMax)) return false;
+  return true;
+}
+
+function filteredIndices() {
+  const idx = [];
+  DATA.registros.forEach((r, i) => { if (isRecordVisible(r)) idx.push(i); });
+  return idx;
+}
+
+function updateDataSummary() {
+  const total = DATA.registros.length;
+  const visible = filteredIndices().length;
+  document.getElementById("data-summary").textContent =
+    `${visible}/${total} usuarios | ${DATA.feature_cols.length} dim -> 2D | PCA | t-SNE | UMAP`;
+}
+
+function onFilterChange() {
+  if (!DATA) return;
+  readFilterState();
+  if (selectedId !== null && !isRecordVisible(selectedRecord())) {
+    selectedId = null;
+  }
+  updateDataSummary();
+  drawScatter();
+  drawBarChart();
+  drawHistogram();
+  if (selectedId === null) updateDetails(null);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("filter-toggle");
+  const panel = document.getElementById("filter-panel");
+  btn.addEventListener("click", () => {
+    panel.classList.toggle("open");
+    btn.textContent = panel.classList.contains("open") ? "Filtros ▴" : "Filtros ▾";
+  });
+});
+
+function drawScatter() {
+  const container = document.getElementById("scatter-container");
+  const rect = container.getBoundingClientRect();
+  const w = rect.width || 600;
+  const h = rect.height || 300;
+  container.innerHTML = "";
+
+  const svg = d3.select(container).append("svg").attr("width", w).attr("height", h);
+  const tech = getTech();
+  const allCoords = DATA[tech].coords;
+  const visIdx = filteredIndices();
+  const visRecords = visIdx.map(i => DATA.registros[i]);
+  const visCoords = visIdx.map(i => allCoords[i]);
+
+  const xExt = d3.extent(allCoords, d => d[0]);
+  const yExt = d3.extent(allCoords, d => d[1]);
+  const xPad = (xExt[1] - xExt[0]) * 0.1 || 1;
+  const yPad = (yExt[1] - yExt[0]) * 0.1 || 1;
+  const xScale = d3.scaleLinear().domain([xExt[0] - xPad, xExt[1] + xPad]).range([MARGIN.l, w - MARGIN.r]);
+  const yScale = d3.scaleLinear().domain([yExt[0] - yPad, yExt[1] + yPad]).range([h - MARGIN.b, MARGIN.t]);
+
+  svg.append("g")
+    .attr("transform", `translate(0,${h - MARGIN.b})`)
+    .call(d3.axisBottom(xScale).ticks(6))
+    .selectAll("text").attr("font-size", "9px");
+  svg.append("g")
+    .attr("transform", `translate(${MARGIN.l},0)`)
+    .call(d3.axisLeft(yScale).ticks(6))
+    .selectAll("text").attr("font-size", "9px");
+  svg.append("text")
+    .attr("class","axis-label")
+    .attr("x", w / 2).attr("y", h - 4).attr("text-anchor","middle")
+    .text("Dimension X");
+  svg.append("text")
+    .attr("class","axis-label")
+    .attr("x", 8).attr("y", h / 2).attr("text-anchor","middle")
+    .attr("transform","rotate(-90,8,"+h/2+")")
+    .text("Dimension Y");
+
+  const hasSelection = selectedId !== null;
+
+  svg.append("g").selectAll("circle")
+    .data(visRecords)
+    .join("circle")
+    .attr("class", "dot")
+    .attr("cx", (d,i) => xScale(visCoords[i][0]))
+    .attr("cy", (d,i) => yScale(visCoords[i][1]))
+    .attr("r", d => d.id === selectedId ? 8 : 5)
+    .attr("fill", d => DATA.colores_trastorno[d.trastorno] || "#888")
+    .attr("stroke", d => d.id === selectedId ? "#111827" : "none")
+    .attr("stroke-width", d => d.id === selectedId ? 2.5 : 0)
+    .attr("opacity", d => hasSelection && d.id !== selectedId ? 0.3 : 0.78)
+    .style("cursor","pointer")
+    .on("mouseenter", (ev,d) => {
+      TOOLTIP.style("opacity",1).html(
+        `<strong>Empleado #${d.id}</strong> · ${escapeHTML(d.trastorno)}<br>` +
+        `${escapeHTML(d.ocupacion || "Sin ocupacion")}<br>` +
+        `Edad: ${formatValue(d.edad, " anos")} | Genero: ${escapeHTML(d.genero || "N/D")}<br>` +
+        `Sueno: ${formatValue(d.duracion_sueno_horas, " h")} | Calidad: ${formatValue(d.calidad_sueno, " /10")}<br>` +
+        `Estres: ${formatValue(d.nivel_estres, " /10")} | Fc: ${formatValue(d.frecuencia_cardiaca, " bpm")}<br>` +
+        `IMC: ${escapeHTML(d.categoria_imc || "N/D")} | Pasos: ${formatValue(d.pasos_diarios)}`
+      );
+    })
+    .on("mousemove", ev => TOOLTIP.style("left",(ev.pageX+12)+"px").style("top",(ev.pageY-10)+"px"))
+    .on("mouseleave", () => TOOLTIP.style("opacity",0))
+    .on("click", (ev,d) => {
+      selectedId = d.id;
+      drawScatter();
+      drawBarChart();
+      drawHistogram();
+      updateDetails(d);
+    });
+
+  if (selectedId !== null) {
+    const selIdx = visRecords.findIndex(r => r.id === selectedId);
+    if (selIdx !== -1) {
+      const selRec = visRecords[selIdx];
+      const cx = xScale(visCoords[selIdx][0]);
+      const cy = yScale(visCoords[selIdx][1]);
+      const labelGroup = svg.append("g").attr("class", "selected-label");
+      const lines = [
+        `#${selRec.id} ${escapeHTML(selRec.ocupacion || "")}`,
+        `${escapeHTML(selRec.trastorno)} | ${escapeHTML(selRec.genero || "")} | ${formatValue(selRec.edad, "a")}`,
+        `Sueno: ${formatValue(selRec.duracion_sueno_horas, "h")} Cal: ${formatValue(selRec.calidad_sueno)}/10`,
+        `Estres: ${formatValue(selRec.nivel_estres)}/10 IMC: ${escapeHTML(selRec.categoria_imc || "")}`
+      ];
+      const bbox = {w: 0, h: lines.length * 14 + 10};
+      lines.forEach(l => { const tw = l.length * 6.5; if (tw > bbox.w) bbox.w = tw; });
+      bbox.w = Math.min(bbox.w + 16, 240);
+      let lx = cx + 14, ly = cy - 8;
+      if (lx + bbox.w > w - MARGIN.r) lx = cx - bbox.w - 14;
+      if (ly + bbox.h > h - MARGIN.b) ly = h - MARGIN.b - bbox.h;
+      if (ly < MARGIN.t) ly = MARGIN.t;
+      labelGroup.append("rect")
+        .attr("x", lx).attr("y", ly)
+        .attr("width", bbox.w).attr("height", bbox.h)
+        .attr("rx", 4).attr("fill", "rgba(23,32,51,0.88)").attr("stroke", "#2f9c95").attr("stroke-width", 1.5);
+      lines.forEach((l, i) => {
+        labelGroup.append("text")
+          .attr("x", lx + 8).attr("y", ly + 14 + i * 14)
+          .attr("fill", "#fff").attr("font-size", "10px").attr("font-weight", i === 0 ? "700" : "400")
+          .text(l);
+      });
+    }
+  }
+
+  let varExpText = "";
+  if (tech === "pca" && DATA.pca.varianza_explicada) {
+    const v = DATA.pca.varianza_explicada;
+    varExpText = `PCA - varianza explicada: PC1=${(v[0]*100).toFixed(1)}%, PC2=${(v[1]*100).toFixed(1)}%`;
+  }
+  document.getElementById("var-exp-container").textContent = varExpText;
+}
+
+function drawBarChart() {
+  const container = document.getElementById("bar-container");
+  const rect = container.getBoundingClientRect();
+  const w = rect.width || 600;
+  const h = rect.height || 300;
+  container.innerHTML = "";
+
+  if (selectedId === null) {
+    container.innerHTML = '<div class="hint">Selecciona un punto en el espacio latente.</div>';
+    return;
+  }
+
+  const sel1 = d3.select("#select-attr1").property("value");
+  const sel2 = d3.select("#select-attr2").property("value");
+  if (!sel1 && !sel2) {
+    container.innerHTML = '<div class="hint">Selecciona 1 o 2 atributos para comparar.</div>';
+    return;
+  }
+
+  const record = selectedRecord();
+  if (!record) return;
+
+  const attrs = [];
+  if (sel1) attrs.push({key: sel1, label: d3.select("#select-attr1 option:checked").text(), val: record[sel1]});
+  if (sel2) attrs.push({key: sel2, label: d3.select("#select-attr2 option:checked").text(), val: record[sel2]});
+
+  const svg = d3.select(container).append("svg").attr("width", w).attr("height", h);
+  const xScale = d3.scaleBand().domain(attrs.map(a => a.label)).range([MARGIN.l, w - MARGIN.r - 10]).padding(0.35);
+  const yScale = d3.scaleLinear().domain([0, 1]).range([h - MARGIN.b - 5, MARGIN.t]);
+
+  svg.append("g")
+    .attr("transform", `translate(${MARGIN.l},0)`)
+    .call(d3.axisLeft(yScale).ticks(5).tickFormat(d3.format(".0%")))
+    .selectAll("text").attr("font-size", "9px");
+  svg.append("g")
+    .attr("transform", `translate(0,${h - MARGIN.b - 5})`)
+    .call(d3.axisBottom(xScale))
+    .selectAll("text").attr("font-size", "9px").attr("dy", "1em");
+
+  svg.selectAll("rect").data(attrs).join("rect")
+    .attr("x", d => xScale(d.label))
+    .attr("y", d => yScale(d.val))
+    .attr("width", xScale.bandwidth())
+    .attr("height", d => h - MARGIN.b - 5 - yScale(d.val))
+    .attr("fill", (d,i) => ["#2f9c95","#6c7ae0"][i])
+    .attr("rx", 3);
+
+  attrs.forEach(a => {
+    svg.append("text")
+      .attr("x", xScale(a.label) + xScale.bandwidth()/2)
+      .attr("y", yScale(a.val) - 6)
+      .attr("text-anchor", "middle")
+      .attr("font-size", "11px")
+      .attr("font-weight", "800")
+      .attr("fill", "#243044")
+      .text((a.val * 100).toFixed(1) + "%");
+  });
+}
+
+function drawHistogram() {
+  const container = document.getElementById("hist-container");
+  const rect = container.getBoundingClientRect();
+  const w = rect.width || 600;
+  const h = rect.height || 300;
+  container.innerHTML = "";
+
+  const feat = d3.select("#select-hist").property("value");
+  if (!feat) {
+    container.innerHTML = '<div class="hint">Selecciona una feature para ver la distribucion de usuarios.</div>';
+    return;
+  }
+
+  const visIdx = new Set(filteredIndices());
+  const vals = DATA.registros.filter((_, i) => visIdx.has(i)).map(r => r[feat]).filter(v => v != null);
+  if (!vals.length) {
+    container.innerHTML = '<div class="hint">No hay datos con los filtros actuales.</div>';
+    return;
+  }
+
+  const bins = d3.bin().thresholds(20)(vals);
+  const xScale = d3.scaleLinear().domain([bins[0].x0, bins[bins.length-1].x1]).range([MARGIN.l, w - MARGIN.r]);
+  const yScale = d3.scaleLinear().domain([0, d3.max(bins, b => b.length)]).range([h - MARGIN.b, MARGIN.t]).nice();
+  const svg = d3.select(container).append("svg").attr("width", w).attr("height", h);
+
+  svg.append("g")
+    .attr("transform", `translate(0,${h - MARGIN.b})`)
+    .call(d3.axisBottom(xScale).ticks(6))
+    .selectAll("text").attr("font-size", "9px");
+  svg.append("g")
+    .attr("transform", `translate(${MARGIN.l},0)`)
+    .call(d3.axisLeft(yScale).ticks(5))
+    .selectAll("text").attr("font-size", "9px");
+
+  svg.selectAll("rect").data(bins).join("rect")
+    .attr("x", d => xScale(d.x0))
+    .attr("y", d => yScale(d.length))
+    .attr("width", d => Math.max(1, xScale(d.x1) - xScale(d.x0) - 1))
+    .attr("height", d => h - MARGIN.b - yScale(d.length))
+    .attr("fill", "#d9e1ea")
+    .attr("stroke", "#bdc8d6")
+    .attr("stroke-width", 0.5);
+
+  const record = selectedRecord();
+  if (record && record[feat] != null) {
+    const sv = record[feat];
+    svg.append("line")
+      .attr("x1", xScale(sv)).attr("x2", xScale(sv))
+      .attr("y1", MARGIN.t).attr("y2", h - MARGIN.b)
+      .attr("stroke", "#c94c4c").attr("stroke-width", 2.5).attr("stroke-dasharray","4,3");
+    svg.append("text")
+      .attr("x", xScale(sv)).attr("y", MARGIN.t - 4)
+      .attr("text-anchor", "middle").attr("font-size", "10px").attr("fill", "#c94c4c").attr("font-weight","800")
+      .text(`Empleado #${selectedId}: ${(sv*100).toFixed(1)}%`);
+  }
+}
+
+function updateDetails(record) {
+  const panel = document.getElementById("panel-detalles");
+  if (!record) {
+    panel.innerHTML = '<div class="empty-state">Seleccione un punto del espacio latente para ver el perfil completo del empleado.</div>';
+    return;
+  }
+
+  const anomalyClass = Number(record.tiene_anomalia_iqr) === 1 ? "status-chip warning" : "status-chip";
+  const anomalyText = Number(record.tiene_anomalia_iqr) === 1 ? "Con anomalia IQR" : "Sin anomalias IQR";
+  panel.innerHTML = `
+    <div class="profile-card">
+      <div class="profile-head">
+        <div>
+          <span class="detail-kicker">Empleado #${record.id_persona}</span>
+          <h4>${escapeHTML(record.ocupacion || "Ocupacion sin dato")}</h4>
+        </div>
+        <span class="badge ${badgeClass(record.trastorno)}">${escapeHTML(record.trastorno || "Sin dato")}</span>
+      </div>
+      <div class="profile-grid">
+        <div class="profile-field"><span>Edad</span><strong>${formatValue(record.edad, " anos")}</strong></div>
+        <div class="profile-field"><span>Genero</span><strong>${formatValue(record.genero)}</strong></div>
+        <div class="profile-field"><span>Horas de sueno</span><strong>${formatValue(record.duracion_sueno_horas, " h")}</strong></div>
+        <div class="profile-field"><span>Calidad sueno</span><strong>${formatValue(record.calidad_sueno, " / 10")}</strong></div>
+        <div class="profile-field"><span>Nivel de estres</span><strong>${formatValue(record.nivel_estres, " / 10")}</strong></div>
+        <div class="profile-field"><span>Actividad fisica</span><strong>${formatValue(record.nivel_actividad_fisica, " min/dia")}</strong></div>
+        <div class="profile-field"><span>Presion arterial</span><strong>${formatValue(record.presion_arterial, " mmHg")}</strong></div>
+        <div class="profile-field"><span>Frecuencia cardiaca</span><strong>${formatValue(record.frecuencia_cardiaca, " bpm")}</strong></div>
+        <div class="profile-field"><span>Pasos diarios</span><strong>${formatValue(record.pasos_diarios)}</strong></div>
+        <div class="profile-field"><span>Categoria IMC</span><strong>${formatValue(record.categoria_imc)}</strong></div>
+      </div>
+      <div class="status-row">
+        <span class="status-chip">Sueno ${formatValue(record.calidad_sueno_nivel).toLowerCase()}</span>
+        <span class="status-chip">Estres ${formatValue(record.estres_nivel).toLowerCase()}</span>
+        <span class="${anomalyClass}">${anomalyText}</span>
+      </div>
+    </div>`;
+}
+
+function populateSelects() {
+  const attr1 = document.getElementById("select-attr1");
+  const attr2 = document.getElementById("select-attr2");
+  const hist = document.getElementById("select-hist");
+  attr1.innerHTML = '<option value="">Seleccionar</option>';
+  attr2.innerHTML = '<option value="">Seleccionar</option>';
+  hist.innerHTML = '<option value="">Seleccionar</option>';
+
+  DATA.bar_atributos.forEach(a => {
+    attr1.innerHTML += `<option value="${a.key}">${escapeHTML(a.label)}</option>`;
+    attr2.innerHTML += `<option value="${a.key}">${escapeHTML(a.label)}</option>`;
+  });
+  DATA.histogram_features.forEach(f => {
+    hist.innerHTML += `<option value="${f.key}">${escapeHTML(f.label)}</option>`;
+  });
+
+  attr1.value = "duracion_sueno_horas_norm";
+  attr2.value = "nivel_estres_norm";
+  hist.value = "edad_norm";
+
+  attr1.onchange = drawBarChart;
+  attr2.onchange = drawBarChart;
+  hist.onchange = drawHistogram;
+}
+
+function drawLegend() {
+  const c = document.getElementById("legend-container");
+  c.innerHTML = "";
+  Object.entries(DATA.colores_trastorno).forEach(([label, color]) => {
+    c.innerHTML += `<div class="legend-item"><span class="legend-dot" style="background:${color}"></span>${escapeHTML(label)}</div>`;
+  });
+}
+
+function redrawAll() {
+  drawScatter();
+  drawBarChart();
+  drawHistogram();
+}
+
+async function init() {
+  try {
+    const resp = await fetch("http://localhost:5000/api/data");
+    if (!resp.ok) throw new Error("Error " + resp.status);
+    DATA = await resp.json();
+    readFilterState();
+    updateDataSummary();
+    populateSelects();
+    drawLegend();
+    document.getElementById("select-tech").onchange = () => {
+      drawScatter();
+      updateDetails(selectedRecord());
+    };
+    window.addEventListener("resize", redrawAll);
+    redrawAll();
+  } catch(e) {
+    document.body.innerHTML = `<div style="padding:40px;text-align:center;color:#c00"><h2>Error al cargar datos</h2><p>${escapeHTML(e.message)}</p></div>`;
+  }
+}
+
+init();
+</script>
+</body>
+</html>

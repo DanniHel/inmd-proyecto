@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espacio Latente - Sleep Health</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#eef2f6;color:#1f2937;overflow:hidden;height:100vh}
+.header{height:50px;background:#172033;color:#fff;padding:0 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #2f9c95;flex-shrink:0}
+.header h1{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex-shrink:1}
+.header-right{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:4px;height:calc(100vh - 53px);padding:4px}
+.quad{background:#fff;border:1px solid #dce3ec;border-radius:6px;overflow:hidden;position:relative;display:flex;flex-direction:column;min-width:0}
+.quad-title{min-height:38px;font-size:12px;font-weight:700;color:#354052;padding:7px 11px;border-bottom:1px solid #e8edf3;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0}
+.quad-title span{white-space:nowrap}
+.quad-body{flex:1;position:relative;overflow:hidden;min-height:0}
+.controls-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+.controls-row label{font-size:11px;font-weight:600;color:#687386}
+.controls-row select{font-size:11px;padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;background:#fff;color:#243044;cursor:pointer;max-width:145px}
+.controls-row select:hover{border-color:#2f9c95}
+.tooltip{position:absolute;background:rgba(17,24,39,.92);color:#fff;padding:7px 10px;border-radius:4px;font-size:11px;line-height:1.45;pointer-events:none;opacity:0;z-index:100;white-space:nowrap}
+.axis-label{font-size:10px;fill:#7a8493}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:11px;color:#4b5563}
+.legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.details-scroll{height:100%;padding:12px;overflow-y:auto}
+.empty-state{height:150px;border:1px dashed #cbd5e1;border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;color:#7a8493;font-size:13px;padding:18px;line-height:1.4}
+.profile-card{border:1px solid #dfe7ef;border-radius:6px;background:#fbfcfe;padding:12px}
+.profile-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #e8edf3}
+.profile-head h4{font-size:15px;line-height:1.25;color:#172033;margin-top:2px}
+.detail-kicker{display:block;font-size:10px;color:#687386;font-weight:800;text-transform:uppercase}
+.badge{display:inline-flex;align-items:center;justify-content:center;padding:5px 9px;border-radius:999px;color:#fff;font-size:11px;font-weight:800;white-space:nowrap}
+.badge.ninguno{background:#2f6f9f}
+.badge.insomnio{background:#c94c4c}
+.badge.apnea-del-sueno{background:#5c8f3f}
+.badge.sin-dato{background:#6b7280}
+.profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.profile-field{border:1px solid #edf1f5;border-radius:6px;background:#fff;padding:7px 8px;min-height:52px}
+.profile-field span{display:block;font-size:10px;color:#687386;text-transform:uppercase;margin-bottom:3px;font-weight:700}
+.profile-field strong{display:block;font-size:13px;color:#1f2937;line-height:1.25;word-break:break-word}
+.status-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.status-chip{border-radius:999px;padding:4px 8px;font-size:11px;font-weight:700;background:#e9f4f3;color:#1f6f69}
+.status-chip.warning{background:#fff1d6;color:#8a5a00}
+.method-notes{font-size:11px;color:#7a8493;line-height:1.45}
+.method-notes p{margin-bottom:4px}
+.hint{padding:20px;text-align:center;color:#8a95a5;font-size:13px}
+/* ── Botones header ─────────────────────────────── */
+.hdr-btn{
+  color:#fff;border:none;padding:5px 12px;
+  border-radius:5px;cursor:pointer;font-weight:700;
+  font-size:11px;letter-spacing:.4px;
+  transition:transform .15s,box-shadow .15s;
+  white-space:nowrap;flex-shrink:0;
+}
+#btn-ml{background:linear-gradient(135deg,#2f9c95,#1a7a74);box-shadow:0 2px 8px rgba(47,156,149,.45)}
+#btn-ml:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(47,156,149,.6)}
+#btn-evaluar{background:linear-gradient(135deg,#6c7ae0,#4a54c0);box-shadow:0 2px 8px rgba(108,122,224,.45)}
+#btn-evaluar:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(108,122,224,.6)}
+@keyframes mlPulse{
+  0%,100%{box-shadow:0 2px 8px rgba(47,156,149,.45)}
+  50%{box-shadow:0 2px 16px rgba(47,156,149,.85)}
+}
+#btn-ml{animation:mlPulse 2.5s ease-in-out 3}
+/* ── Alertas clínicas ───────────────────────────── */
+.alerta-box{border-radius:6px;padding:9px 12px;font-size:11.5px;line-height:1.45;margin-top:6px;display:flex;gap:8px;align-items:flex-start}
+.alerta-box.peligro{background:#fff0f0;border:1px solid #f5c6cb;color:#7a1f1f}
+.alerta-box.advertencia{background:#fffbec;border:1px solid #ffe08a;color:#7a5a00}
+.alerta-box.info{background:#eef5ff;border:1px solid #b8d4f8;color:#1a3f6f}
+.alerta-box.ok{background:#edfaf3;border:1px solid #a3d9b8;color:#145229}
+.alerta-icono{font-size:16px;flex-shrink:0;line-height:1.2}
+.alerta-titulo{font-weight:800;display:block;margin-bottom:2px}
+.alerta-rec{font-size:10.5px;margin-top:3px;opacity:.8;font-style:italic}
+.alerta-seccion{margin-top:10px;padding-top:8px;border-top:1px solid #edf1f5}
+.alerta-seccion-label{font-size:10px;font-weight:800;text-transform:uppercase;color:#687386;letter-spacing:.5px;margin-bottom:4px}
+/* ── Formulario evaluador ───────────────────────── */
+.eval-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.eval-field label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;color:#687386;margin-bottom:3px}
+.eval-field input,.eval-field select{width:100%;padding:6px 8px;font-size:12px;border:1px solid #cbd5e1;border-radius:4px;background:#fff;color:#1f2937}
+.eval-field input:focus,.eval-field select:focus{outline:none;border-color:#2f9c95}
+.eval-result{border-radius:8px;padding:14px;margin-top:10px;background:#f8fafc;border:1px solid #dce3ec}
+.pred-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-weight:800;font-size:13px;margin-bottom:10px}
+.pred-chip.apnea{background:#d4edda;color:#1a5c30}
+.pred-chip.insomnio{background:#f8d7da;color:#721c24}
+.pred-chip.riesgo{background:#fff3cd;color:#856404}
+.pred-chip.ninguno{background:#d1ecf1;color:#0c5460}
+/* ── Panel riesgo global ────────────────────────── */
+.risk-stat{background:#eef2f6;border-radius:8px;padding:10px;text-align:center}
+.risk-stat .val{font-size:22px;font-weight:800;color:#172033;line-height:1}
+.risk-stat .lbl{font-size:10px;color:#687386;margin-top:3px}
+.risk-stat.danger .val{color:#c94c4c}
+.risk-stat.warn .val{color:#b87a00}
+.risk-stat.safe .val{color:#2f7a5c}
+@media(max-width:520px){
+body{overflow:auto;height:auto}
+.header{height:auto;align-items:flex-start;flex-direction:column;gap:8px;padding-bottom:10px}
+.header span{text-align:left}
+.grid{grid-template-columns:1fr;grid-template-rows:repeat(4,330px);height:auto;min-height:calc(100vh - 54px)}
+.quad-title{align-items:flex-start;flex-direction:column}
+.controls-row{justify-content:flex-start}
+.profile-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>Espacio Latente - Sleep Health</h1>
+<div class="header-right">
+<span id="data-summary" style="font-size:11px;color:#cfd7e3;white-space:nowrap">Cargando...</span>
+<button id="btn-evaluar" class="hdr-btn" onclick="abrirEvaluador()" title="Evaluar nuevo paciente">&#x1F4CB; Evaluar</button>
+<button id="btn-ml" class="hdr-btn" onclick="loadMLResults()" title="Ver resultados del pipeline ML">&#x1F916; Pipeline ML</button>
+</div>
+</div>
+
+<div class="grid">
+<div class="quad" id="quad-scatter">
+<div class="quad-title">
+<span>Cuadrante 1: Espacio latente X,Y</span>
+<div class="controls-row">
+<label for="select-tech">Tecnica:</label>
+<select id="select-tech">
+<option value="pca">PCA</option>
+<option value="tsne">t-SNE / TSNET</option>
+<option value="umap">UMAP / ELMAP</option>
+</select>
+</div>
+</div>
+<div class="quad-body" id="scatter-container"></div>
+</div>
+
+<div class="quad" id="quad-bar">
+  <div class="quad-title">
+    <span>Cuadrante 2: Espacio latente X,Y (técnica independiente)</span>
+    <div class="controls-row">
+      <label for="select-bar-tech">Técnica:</label>
+      <select id="select-bar-tech">
+        <option value="pca">PCA</option>
+        <option value="tsne">t-SNE / TSNET</option>
+        <option value="umap">UMAP / ELMAP</option>
+      </select>
+    </div>
+  </div>
+  <div class="quad-body" id="bar-container"></div>
+</div>
+
+<div class="quad" id="quad-hist">
+<div class="quad-title">
+<span>Cuadrante 3: Histograma de usuarios</span>
+<div class="controls-row">
+<label for="select-hist">Feature:</label>
+<select id="select-hist"><option value="">Seleccionar</option></select>
+</div>
+</div>
+<div class="quad-body" id="hist-container"></div>
+</div>
+
+<div class="quad" id="quad-details">
+<div class="quad-title"><span>Cuadrante 4: Detalles a demanda</span></div>
+<div class="quad-body">
+<div class="details-scroll">
+<div id="legend-container" class="legend"></div>
+<div id="panel-detalles">
+<div class="empty-state">Seleccione un punto del espacio latente para ver el perfil completo del empleado y sus alertas clínicas.</div>
+</div>
+<div id="panel-alertas"></div>
+<div id="var-exp-container" style="margin-top:10px;font-size:11px;color:#687386"></div>
+<hr style="margin:12px 0;border:0;border-top:1px solid #edf1f5">
+<div class="method-notes">
+<p><strong>PCA:</strong> proyeccion lineal que conserva maxima varianza.</p>
+<p><strong>t-SNE / TSNET:</strong> conserva vecindarios locales para ver agrupamientos.</p>
+<p><strong>UMAP / ELMAP:</strong> organiza la estructura local-global del espacio latente.</p>
+<p>El clic enlaza el punto D3 con el registro original del CSV.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<!-- Modal Pipeline ML -->
+<div id="ml-panel" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(17,24,39,.7);z-index:200;overflow-y:auto;padding:30px">
+<div style="background:#fff;border-radius:8px;max-width:760px;margin:20px auto;padding:24px;position:relative">
+<button id="btn-ml-close" style="position:absolute;top:10px;right:12px;background:none;border:none;font-size:20px;cursor:pointer;color:#687386">&times;</button>
+<h2 style="font-size:16px;color:#172033;margin-bottom:6px">🤖 Pipeline ML — Resultados y Riesgo Global</h2>
+<p style="font-size:11px;color:#687386;margin-bottom:14px">Early Warning System · GradientBoostingClassifier · Motor de Reglas Clínicas</p>
+<div id="ml-global-risk" style="margin-bottom:16px"></div>
+<div id="ml-content" style="font-size:13px;color:#1f2937;line-height:1.5">
+<div style="text-align:center;padding:30px;color:#687386">Cargando resultados ML...</div>
+</div>
+</div>
+</div>
+
+<!-- Modal Evaluador Nuevo Paciente -->
+<div id="eval-panel" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(17,24,39,.7);z-index:200;overflow-y:auto;padding:30px">
+<div style="background:#fff;border-radius:8px;max-width:600px;margin:20px auto;padding:24px;position:relative">
+<button id="btn-eval-close" style="position:absolute;top:10px;right:12px;background:none;border:none;font-size:20px;cursor:pointer;color:#687386">&times;</button>
+<h2 style="font-size:16px;color:#172033;margin-bottom:4px">📋 Evaluador de Nuevo Paciente</h2>
+<p style="font-size:11px;color:#687386;margin-bottom:14px">Ingresa los datos clínicos para obtener predicción + alertas del sistema de alerta temprana.</p>
+<div class="eval-form">
+  <div class="eval-field"><label for="ef-imc">Categoría IMC</label>
+    <select id="ef-imc">
+      <option value="Normal">Normal</option>
+      <option value="Overweight">Sobrepeso (Overweight)</option>
+      <option value="Obese">Obesidad (Obese)</option>
+    </select>
+  </div>
+  <div class="eval-field"><label for="ef-presion">Presión arterial (sistólica/diastólica)</label>
+    <input id="ef-presion" type="text" placeholder="ej. 135/88" value="120/80">
+  </div>
+  <div class="eval-field"><label for="ef-sueno">Duración del sueño (horas)</label>
+    <input id="ef-sueno" type="number" min="3" max="12" step="0.5" value="7">
+  </div>
+  <div class="eval-field"><label for="ef-estres">Nivel de estrés (1-10)</label>
+    <input id="ef-estres" type="number" min="1" max="10" step="1" value="5">
+  </div>
+  <div class="eval-field"><label for="ef-fc">Frecuencia cardíaca (bpm)</label>
+    <input id="ef-fc" type="number" min="40" max="150" step="1" value="72">
+  </div>
+  <div class="eval-field"><label for="ef-actividad">Actividad física (min/día)</label>
+    <input id="ef-actividad" type="number" min="0" max="120" step="5" value="45">
+  </div>
+  <div class="eval-field"><label for="ef-calidad">Calidad del sueño (1-10)</label>
+    <input id="ef-calidad" type="number" min="1" max="10" step="1" value="7">
+  </div>
+</div>
+<button onclick="ejecutarEvaluacion()" style="background:linear-gradient(135deg,#6c7ae0,#4a54c0);color:#fff;border:none;padding:8px 20px;border-radius:5px;cursor:pointer;font-weight:700;font-size:12px;width:100%;margin-top:4px">🔍 Analizar Riesgo Clínico</button>
+<div id="eval-result"></div>
+</div>
+</div>
+
+<script>
+const TOOLTIP = d3.select("#tooltip");
+const MARGIN = {t: 20, r: 20, b: 35, l: 45};
+let DATA = null;
+let selectedIds = new Set();
+let lastClickedId = null;
+
+function getTech() {
+  return document.getElementById("select-tech").value;
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[ch]));
+}
+
+function formatValue(value, suffix = "") {
+  if (value === null || value === undefined || value === "") return "Sin dato";
+  if (typeof value === "number") {
+    const formatted = Number.isInteger(value) ? value.toString() : value.toFixed(1);
+    return `${formatted}${suffix}`;
+  }
+  return `${escapeHTML(value)}${suffix}`;
+}
+
+function badgeClass(value) {
+  return String(value || "sin dato")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "") || "sin-dato";
+}
+
+function selectedRecord() {
+  if (lastClickedId !== null) return DATA.registros.find(r => r.id === lastClickedId) || null;
+  if (selectedIds.size > 0) {
+    const first = selectedIds.values().next().value;
+    return DATA.registros.find(r => r.id === first) || null;
+  }
+  return null;
+}
+
+function selectedRecords() {
+  return DATA.registros.filter(r => selectedIds.has(r.id));
+}
+
+function drawScatter() {
+  const container = document.getElementById("scatter-container");
+  const rect = container.getBoundingClientRect();
+  const w = rect.width || 600;
+  const h = rect.height || 300;
+  container.innerHTML = "";
+
+  const svg = d3.select(container).append("svg").attr("width", w).attr("height", h);
+  const tech = getTech();
+  const coords = DATA[tech].coords;
+  const xExt = d3.extent(coords, d => d[0]);
+  const yExt = d3.extent(coords, d => d[1]);
+  const xPad = (xExt[1] - xExt[0]) * 0.1 || 1;
+  const yPad = (yExt[1] - yExt[0]) * 0.1 || 1;
+  const xScale = d3.scaleLinear().domain([xExt[0] - xPad, xExt[1] + xPad]).range([MARGIN.l, w - MARGIN.r]);
+  const yScale = d3.scaleLinear().domain([yExt[0] - yPad, yExt[1] + yPad]).range([h - MARGIN.b, MARGIN.t]);
+
+  svg.append("g")
+    .attr("transform", `translate(0,${h - MARGIN.b})`)
+    .call(d3.axisBottom(xScale).ticks(6))
+    .selectAll("text").attr("font-size", "9px");
+  svg.append("g")
+    .attr("transform", `translate(${MARGIN.l},0)`)
+    .call(d3.axisLeft(yScale).ticks(6))
+    .selectAll("text").attr("font-size", "9px");
+  svg.append("text")
+    .attr("class","axis-label")
+    .attr("x", w / 2).attr("y", h - 4).attr("text-anchor","middle")
+    .text("Dimension X");
+  svg.append("text")
+    .attr("class","axis-label")
+    .attr("x", 8).attr("y", h / 2).attr("text-anchor","middle")
+    .attr("transform","rotate(-90,8,"+h/2+")")
+    .text("Dimension Y");
+
+  const hasSelection = selectedIds.size > 0;
+  svg.append("g").selectAll("circle")
+    .data(DATA.registros)
+    .join("circle")
+    .attr("class", "dot")
+    .attr("cx", (d,i) => xScale(coords[i][0]))
+    .attr("cy", (d,i) => yScale(coords[i][1]))
+    .attr("r", d => selectedIds.has(d.id) ? 8 : 5)
+    .attr("fill", d => DATA.colores_trastorno[d.trastorno] || "#888")
+    .attr("stroke", d => selectedIds.has(d.id) ? "#111827" : "none")
+    .attr("stroke-width", d => selectedIds.has(d.id) ? 2.5 : 0)
+    .attr("opacity", d => hasSelection && !selectedIds.has(d.id) ? 0.3 : 0.78)
+    .style("cursor","pointer")
+    .on("mouseenter", (ev,d) => {
+      TOOLTIP.style("opacity",1).html(
+        `<strong>Empleado #${d.id}</strong> · ${escapeHTML(d.trastorno)}<br>` +
+        `${escapeHTML(d.ocupacion || "Sin ocupacion")}<br>` +
+        `Edad: ${formatValue(d.edad, " anos")} · Estres: ${formatValue(d.nivel_estres, " / 10")}`
+      );
+    })
+    .on("mousemove", ev => TOOLTIP.style("left",(ev.pageX+12)+"px").style("top",(ev.pageY-10)+"px"))
+    .on("mouseleave", () => TOOLTIP.style("opacity",0))
+    .on("click", (ev,d) => {
+      if (selectedIds.has(d.id)) {
+        selectedIds.delete(d.id);
+      } else {
+        selectedIds.add(d.id);
+      }
+      lastClickedId = d.id;
+      drawScatter();
+      drawBarChart();
+      drawHistogram();
+      updateDetails(selectedRecord());
+    });
+
+  let varExpText = "";
+  if (tech === "pca" && DATA.pca.varianza_explicada) {
+    const v = DATA.pca.varianza_explicada;
+    varExpText = `PCA - varianza explicada: PC1=${(v[0]*100).toFixed(1)}%, PC2=${(v[1]*100).toFixed(1)}%`;
+  }
+  document.getElementById("var-exp-container").textContent = varExpText;
+}
+
+function drawBarChart() {
+  const container = document.getElementById("bar-container");
+  const rect = container.getBoundingClientRect();
+  const w = rect.width || 600;
+  const h = rect.height || 300;
+  container.innerHTML = "";
+
+  const barTech = d3.select("#select-bar-tech").property("value");
+  const coords = DATA[barTech].coords;
+  const xExt = d3.extent(coords, d => d[0]);
+  const yExt = d3.extent(coords, d => d[1]);
+  const xPad = (xExt[1] - xExt[0]) * 0.1 || 1;
+  const yPad = (yExt[1] - yExt[0]) * 0.1 || 1;
+  const xScale = d3.scaleLinear().domain([xExt[0] - xPad, xExt[1] + xPad]).range([MARGIN.l, w - MARGIN.r]);
+  const yScale = d3.scaleLinear().domain([yExt[0] - yPad, yExt[1] + yPad]).range([h - MARGIN.b, MARGIN.t]);
+
+  const svg = d3.select(container).append("svg").attr("width", w).attr("height", h);
+
+  svg.append("g")
+    .attr("transform", `translate(0,${h - MARGIN.b})`)
+    .call(d3.axisBottom(xScale).ticks(6))
+    .selectAll("text").attr("font-size", "9px");
+  svg.append("g")
+    .attr("transform", `translate(${MARGIN.l},0)`)
+    .call(d3.axisLeft(yScale).ticks(6))
+    .selectAll("text").attr("font-size", "9px");
+  svg.append("text")
+    .attr("class", "axis-label")
+    .attr("x", w / 2).attr("y", h - 4).attr("text-anchor", "middle")
+    .text("Dimension X");
+  svg.append("text")
+    .attr("class", "axis-label")
+    .attr("x", 8).attr("y", h / 2).attr("text-anchor", "middle")
+    .attr("transform", "rotate(-90,8," + h / 2 + ")")
+    .text("Dimension Y");
+
+  const hasSelection = selectedIds.size > 0;
+  svg.append("g").selectAll("circle")
+    .data(DATA.registros)
+    .join("circle")
+    .attr("class", "dot")
+    .attr("cx", (d, i) => xScale(coords[i][0]))
+    .attr("cy", (d, i) => yScale(coords[i][1]))
+    .attr("r", d => selectedIds.has(d.id) ? 8 : 5)
+    .attr("fill", d => DATA.colores_trastorno[d.trastorno] || "#888")
+    .attr("stroke", d => selectedIds.has(d.id) ? "#111827" : "none")
+    .attr("stroke-width", d => selectedIds.has(d.id) ? 2.5 : 0)
+    .attr("opacity", d => hasSelection && !selectedIds.has(d.id) ? 0.3 : 0.78)
+    .style("cursor", "pointer")
+    .on("mouseenter", (ev, d) => {
+      TOOLTIP.style("opacity", 1).html(
+        `<strong>Empleado #${d.id}</strong> · ${escapeHTML(d.trastorno)}<br>` +
+        `${escapeHTML(d.ocupacion || "Sin ocupacion")}<br>` +
+        `Edad: ${formatValue(d.edad, " anos")} · Estres: ${formatValue(d.nivel_estres, " / 10")}`
+      );
+    })
+    .on("mousemove", ev => TOOLTIP.style("left", (ev.pageX + 12) + "px").style("top", (ev.pageY - 10) + "px"))
+    .on("mouseleave", () => TOOLTIP.style("opacity", 0))
+    .on("click", (ev, d) => {
+      if (selectedIds.has(d.id)) {
+        selectedIds.delete(d.id);
+      } else {
+        selectedIds.add(d.id);
+      }
+      lastClickedId = d.id;
+      drawScatter();
+      drawBarChart();
+      drawHistogram();
+      updateDetails(selectedRecord());
+    });
+
+  let varExpText = "";
+  if (barTech === "pca" && DATA.pca.varianza_explicada) {
+    const v = DATA.pca.varianza_explicada;
+    varExpText = `PCA - varianza explicada: PC1=${(v[0] * 100).toFixed(1)}%, PC2=${(v[1] * 100).toFixed(1)}%`;
+  }
+  document.getElementById("var-exp-container").textContent = varExpText;
+}
+
+function drawHistogram() {
+  const container = document.getElementById("hist-container");
+  const rect = container.getBoundingClientRect();
+  const w = rect.width || 600;
+  const h = rect.height || 300;
+  container.innerHTML = "";
+
+  const feat = d3.select("#select-hist").property("value");
+  if (!feat) {
+    container.innerHTML = '<div class="hint">Selecciona una feature para ver la distribucion de usuarios.</div>';
+    return;
+  }
+
+  const vals = DATA.registros.map(r => r[feat]).filter(v => v != null);
+  const bins = d3.bin().thresholds(20)(vals);
+  const xScale = d3.scaleLinear().domain([bins[0].x0, bins[bins.length-1].x1]).range([MARGIN.l, w - MARGIN.r]);
+  const yScale = d3.scaleLinear().domain([0, d3.max(bins, b => b.length)]).range([h - MARGIN.b, MARGIN.t]).nice();
+  const svg = d3.select(container).append("svg").attr("width", w).attr("height", h);
+
+  svg.append("g")
+    .attr("transform", `translate(0,${h - MARGIN.b})`)
+    .call(d3.axisBottom(xScale).ticks(6))
+    .selectAll("text").attr("font-size", "9px");
+  svg.append("g")
+    .attr("transform", `translate(${MARGIN.l},0)`)
+    .call(d3.axisLeft(yScale).ticks(5))
+    .selectAll("text").attr("font-size", "9px");
+
+  svg.selectAll("rect").data(bins).join("rect")
+    .attr("x", d => xScale(d.x0))
+    .attr("y", d => yScale(d.length))
+    .attr("width", d => Math.max(1, xScale(d.x1) - xScale(d.x0) - 1))
+    .attr("height", d => h - MARGIN.b - yScale(d.length))
+    .attr("fill", "#d9e1ea")
+    .attr("stroke", "#bdc8d6")
+    .attr("stroke-width", 0.5);
+
+  const selRecs = selectedRecords();
+  selRecs.forEach((r, idx) => {
+    if (r[feat] != null) {
+      const sv = r[feat];
+      const hue = (idx * 60 + 0) % 360;
+      const color = `hsl(${hue}, 70%, 45%)`;
+      svg.append("line")
+        .attr("x1", xScale(sv)).attr("x2", xScale(sv))
+        .attr("y1", MARGIN.t + idx * 14).attr("y2", h - MARGIN.b)
+        .attr("stroke", color).attr("stroke-width", 2).attr("stroke-dasharray","4,3");
+      svg.append("text")
+        .attr("x", xScale(sv)).attr("y", MARGIN.t - 4 + idx * 14)
+        .attr("text-anchor", "middle").attr("font-size", "9px").attr("fill", color).attr("font-weight","700")
+        .text(`#${r.id}: ${(sv*100).toFixed(1)}%`);
+    }
+  });
+}
+
+// ── NIVEL 1: Alertas clínicas ────────────────────────────────────────────
+function renderAlertas(alertas) {
+  const ICONO = {peligro:"🚨", advertencia:"⚠️", info:"ℹ️"};
+  if (!alertas || alertas.length === 0) {
+    return `<div class="alerta-box ok"><span class="alerta-icono">✅</span><div><span class="alerta-titulo">Sin factores de riesgo detectados</span>No se identificaron patrones clínicos de riesgo en las variables vitales de este empleado.</div></div>`;
+  }
+  return alertas.map(a => `
+    <div class="alerta-box ${a.tipo}">
+      <span class="alerta-icono">${ICONO[a.tipo] || "⚠️"}</span>
+      <div>
+        <span class="alerta-titulo">${escapeHTML(a.titulo)}</span>
+        ${escapeHTML(a.mensaje)}
+        <div class="alerta-rec">💡 ${escapeHTML(a.recomendacion)}</div>
+      </div>
+    </div>`).join("");
+}
+
+function renderProfileCard(record) {
+  const anomalyClass = Number(record.tiene_anomalia_iqr) === 1 ? "status-chip warning" : "status-chip";
+  const anomalyText = Number(record.tiene_anomalia_iqr) === 1 ? "Con anomalia IQR" : "Sin anomalias IQR";
+  return `
+    <div class="profile-card" style="margin-bottom:8px">
+      <div class="profile-head">
+        <div>
+          <span class="detail-kicker">Empleado #${record.id_persona}</span>
+          <h4>${escapeHTML(record.ocupacion || "Ocupacion sin dato")}</h4>
+        </div>
+        <span class="badge ${badgeClass(record.trastorno)}">${escapeHTML(record.trastorno || "Sin dato")}</span>
+      </div>
+      <div class="profile-grid">
+        <div class="profile-field"><span>Edad</span><strong>${formatValue(record.edad, " anos")}</strong></div>
+        <div class="profile-field"><span>Genero</span><strong>${formatValue(record.genero)}</strong></div>
+        <div class="profile-field"><span>Horas de sueno</span><strong>${formatValue(record.duracion_sueno_horas, " h")}</strong></div>
+        <div class="profile-field"><span>Calidad sueno</span><strong>${formatValue(record.calidad_sueno, " / 10")}</strong></div>
+        <div class="profile-field"><span>Nivel de estres</span><strong>${formatValue(record.nivel_estres, " / 10")}</strong></div>
+        <div class="profile-field"><span>Actividad fisica</span><strong>${formatValue(record.nivel_actividad_fisica, " min/dia")}</strong></div>
+        <div class="profile-field"><span>Presion arterial</span><strong>${formatValue(record.presion_arterial, " mmHg")}</strong></div>
+        <div class="profile-field"><span>Frecuencia cardiaca</span><strong>${formatValue(record.frecuencia_cardiaca, " bpm")}</strong></div>
+        <div class="profile-field"><span>Pasos diarios</span><strong>${formatValue(record.pasos_diarios)}</strong></div>
+        <div class="profile-field"><span>Categoria IMC</span><strong>${formatValue(record.categoria_imc)}</strong></div>
+      </div>
+      <div class="status-row">
+        <span class="status-chip">Sueno ${formatValue(record.calidad_sueno_nivel).toLowerCase()}</span>
+        <span class="status-chip">Estres ${formatValue(record.estres_nivel).toLowerCase()}</span>
+        <span class="${anomalyClass}">${anomalyText}</span>
+      </div>
+    </div>`;
+}
+
+function updateDetails(record) {
+  const panel = document.getElementById("panel-detalles");
+  const panelAlertas = document.getElementById("panel-alertas");
+  const selRecs = selectedRecords();
+
+  if (selRecs.length === 0) {
+    panel.innerHTML = '<div class="empty-state">Seleccione uno o mas puntos del espacio latente para ver sus perfiles y alertas clínicas.</div>';
+    panelAlertas.innerHTML = '';
+    return;
+  }
+
+  panel.innerHTML = selRecs.map(r => renderProfileCard(r)).join('');
+
+  // Acumular alertas de todos los seleccionados
+  const todasAlertas = selRecs.flatMap(r => r.alertas || []);
+  if (todasAlertas.length > 0) {
+    panelAlertas.innerHTML = `
+      <div class="alerta-seccion">
+        <div class="alerta-seccion-label">🔔 Sistema de Alerta Temprana Clínica (${todasAlertas.length} alertas en ${selRecs.length} empleados)</div>
+        ${todasAlertas.map(a => `
+          <div class="alerta-box ${a.tipo}">
+            <span class="alerta-icono">${a.tipo === 'peligro' ? '🚨' : a.tipo === 'advertencia' ? '⚠️' : 'ℹ️'}</span>
+            <div>
+              <span class="alerta-titulo">${escapeHTML(a.titulo)}</span>
+              ${escapeHTML(a.mensaje)}
+              <div class="alerta-rec">💡 ${escapeHTML(a.recomendacion)}</div>
+            </div>
+          </div>`).join('')}
+      </div>`;
+  } else {
+    panelAlertas.innerHTML = `
+      <div class="alerta-seccion">
+        <div class="alerta-seccion-label">🔔 Sistema de Alerta Temprana Clínica</div>
+        <div class="alerta-box ok"><span class="alerta-icono">✅</span><div><span class="alerta-titulo">Sin factores de riesgo</span>Ninguno de los ${selRecs.length} empleados seleccionados presenta patrones clínicos de riesgo.</div></div>
+      </div>`;
+  }
+}
+
+function populateSelects() {
+  const hist = document.getElementById("select-hist");
+  hist.innerHTML = '<option value="">Seleccionar</option>';
+
+  DATA.histogram_features.forEach(f => {
+    hist.innerHTML += `<option value="${f.key}">${escapeHTML(f.label)}</option>`;
+  });
+
+  hist.value = "edad_norm";
+
+  hist.onchange = drawHistogram;
+}
+
+function drawLegend() {
+  const c = document.getElementById("legend-container");
+  c.innerHTML = "";
+  Object.entries(DATA.colores_trastorno).forEach(([label, color]) => {
+    c.innerHTML += `<div class="legend-item"><span class="legend-dot" style="background:${color}"></span>${escapeHTML(label)}</div>`;
+  });
+}
+
+function redrawAll() {
+  drawScatter();
+  drawBarChart();
+  drawHistogram();
+}
+
+// ── NIVEL 3: Riesgo Global ───────────────────────────────────────────────
+async function cargarRiesgoGlobal() {
+  const el = document.getElementById("ml-global-risk");
+  try {
+    const r = await fetch("/api/riesgo-global").then(x => x.json());
+    const pct = r.pct_con_alertas;
+    const altosRiesgo = r.empleados_alto_riesgo.length;
+    el.innerHTML = `
+      <h3 style="font-size:13px;color:#172033;margin-bottom:10px">📊 Resumen de Riesgo Organizacional (${r.total_empleados} empleados)</h3>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px">
+        <div class="risk-stat danger"><div class="val">${r.por_tipo.peligro || 0}</div><div class="lbl">Alertas Críticas</div></div>
+        <div class="risk-stat warn"><div class="val">${r.por_tipo.advertencia || 0}</div><div class="lbl">Advertencias</div></div>
+        <div class="risk-stat"><div class="val">${r.por_tipo.info || 0}</div><div class="lbl">Info</div></div>
+        <div class="risk-stat ${pct>50?'danger':pct>25?'warn':'safe'}"><div class="val">${pct}%</div><div class="lbl">Empleados con Riesgo</div></div>
+        <div class="risk-stat ${altosRiesgo>10?'danger':altosRiesgo>5?'warn':'safe'}"><div class="val">${altosRiesgo}</div><div class="lbl">Alto Riesgo (≥2 alertas)</div></div>
+      </div>
+      <div style="font-size:11px;color:#687386;margin-bottom:4px"><strong>Reglas activadas:</strong> ${Object.entries(r.por_regla).map(([k,v])=>`${k.replace(/_/g,' ')}: ${v}`).join(' · ')}</div>
+      ${altosRiesgo > 0 ? `
+      <details style="margin-top:8px">
+        <summary style="font-size:11px;font-weight:700;color:#c94c4c;cursor:pointer">⚠️ Ver ${altosRiesgo} empleados de alto riesgo</summary>
+        <div style="margin-top:6px;max-height:120px;overflow-y:auto">
+          <table style="border-collapse:collapse;font-size:11px;width:100%">
+            <tr><th style="padding:3px 6px;border:1px solid #dce3ec;background:#eef2f6">#</th><th style="padding:3px 6px;border:1px solid #dce3ec;background:#eef2f6">Ocupación</th><th style="padding:3px 6px;border:1px solid #dce3ec;background:#eef2f6">Trastorno</th><th style="padding:3px 6px;border:1px solid #dce3ec;background:#eef2f6">Alertas</th></tr>
+            ${r.empleados_alto_riesgo.slice(0,20).map(e=>`<tr><td style="padding:3px 6px;border:1px solid #dce3ec">${e.id_persona}</td><td style="padding:3px 6px;border:1px solid #dce3ec">${e.ocupacion}</td><td style="padding:3px 6px;border:1px solid #dce3ec">${e.trastorno_sueno}</td><td style="padding:3px 6px;border:1px solid #dce3ec;text-align:center;font-weight:800;color:#c94c4c">${e.num_alertas}</td></tr>`).join('')}
+          </table>
+        </div>
+      </details>` : ''}
+      <hr style="border:0;border-top:1px solid #e8edf3;margin:12px 0">`;
+  } catch(e) {
+    el.innerHTML = '<p style="color:#687386;font-size:11px">No se pudo cargar el resumen de riesgo global.</p>';
+  }
+}
+
+async function loadMLResults() {
+  const panel = document.getElementById("ml-panel");
+  const content = document.getElementById("ml-content");
+  panel.style.display = "block";
+  document.getElementById("ml-global-risk").innerHTML = '<div style="text-align:center;padding:10px;color:#687386;font-size:12px">Cargando riesgo global...</div>';
+  content.innerHTML = '<div style="text-align:center;padding:30px;color:#687386">Cargando resultados ML...</div>';
+  cargarRiesgoGlobal();
+  try {
+    const resp = await fetch("/api/ml/results");
+    if (!resp.ok) throw new Error("Ejecuta pipeline_ml.py primero");
+    const r = await resp.json();
+    const ev = r.evaluacion;
+    const sel = r.seleccion_variables;
+    const eda = r.eda;
+    const pre = r.preprocesamiento;
+
+    let cmHTML = "";
+    if (ev.matriz_confusion) {
+      const labels = ev.etiquetas_clases;
+      const cm = ev.matriz_confusion;
+      cmHTML = '<table style="border-collapse:collapse;margin:10px auto;font-size:12px">';
+      cmHTML += '<tr><td></td>';
+      labels.forEach(l => { cmHTML += `<th style="padding:6px 10px;border:1px solid #dce3ec;background:#eef2f6;font-size:11px">Pred<br>${l}</th>`; });
+      cmHTML += '</tr>';
+      labels.forEach((l, i) => {
+        cmHTML += `<tr><th style="padding:6px 10px;border:1px solid #dce3ec;background:#eef2f6;font-size:11px">Real<br>${l}</th>`;
+        cm[i].forEach((v, j) => {
+          const highlight = i === j ? 'background:#d4edda;font-weight:800' : '';
+          cmHTML += `<td style="padding:6px 10px;border:1px solid #dce3ec;text-align:center;${highlight}">${v}</td>`;
+        });
+        cmHTML += '</tr>';
+      });
+      cmHTML += '</table>';
+    }
+
+    content.innerHTML = `
+      <div style="margin-bottom:16px">
+        <h3 style="font-size:14px;color:#172033;margin-bottom:8px">1. EDA - Distribucion de Clases</h3>
+        <p>Total: <strong>${eda.total_muestras}</strong> muestras</p>
+        <p>Desbalance: clase mayoritaria <strong>${eda.clase_mayoritaria}</strong> (${eda.conteo_clases[eda.clase_mayoritaria]}) vs minoritaria <strong>${eda.clase_minoritaria}</strong> (${eda.conteo_clases[eda.clase_minoritaria]}) — ratio <strong>${eda.desbalance_ratio}:1</strong></p>
+        <p style="margin-top:6px;font-size:11px;color:#687386">
+          SMOTEENN aplicado: ${pre.train_size} train + ${pre.test_size} test (80/20) -> ${Object.values(pre.smoteenn_clases_resultantes).reduce((a,b)=>a+b,0)} muestras balanceadas
+        </p>
+      </div>
+      <hr style="border:0;border-top:1px solid #e8edf3;margin:12px 0">
+      <div style="margin-bottom:16px">
+        <h3 style="font-size:14px;color:#172033;margin-bottom:8px">2. Seleccion de Variables - Top 5</h3>
+        <p style="font-size:11px;color:#687386">Metodo: GradientBoostingRegressor</p>
+        <table style="border-collapse:collapse;margin:8px 0;font-size:12px;width:100%">
+          <tr><th style="padding:5px 8px;border:1px solid #dce3ec;background:#eef2f6;text-align:left">#</th><th style="padding:5px 8px;border:1px solid #dce3ec;background:#eef2f6;text-align:left">Feature</th><th style="padding:5px 8px;border:1px solid #dce3ec;background:#eef2f6;text-align:right">Importancia</th></tr>
+          ${sel.features.map(f => `<tr><td style="padding:5px 8px;border:1px solid #dce3ec">${f.posicion}</td><td style="padding:5px 8px;border:1px solid #dce3ec">${f.feature}</td><td style="padding:5px 8px;border:1px solid #dce3ec;text-align:right">${(f.importancia*100).toFixed(2)}%</td></tr>`).join("")}
+        </table>
+      </div>
+      <hr style="border:0;border-top:1px solid #e8edf3;margin:12px 0">
+      <div style="margin-bottom:16px">
+        <h3 style="font-size:14px;color:#172033;margin-bottom:8px">3. Evaluacion - GradientBoostingClassifier</h3>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px 0">
+          <div style="background:#eef2f6;border-radius:6px;padding:10px;text-align:center"><div style="font-size:10px;color:#687386">Accuracy</div><div style="font-size:18px;font-weight:800;color:#172033">${(ev.accuracy*100).toFixed(1)}%</div></div>
+          <div style="background:#eef2f6;border-radius:6px;padding:10px;text-align:center"><div style="font-size:10px;color:#687386">Precision</div><div style="font-size:18px;font-weight:800;color:#172033">${(ev.precision*100).toFixed(1)}%</div></div>
+          <div style="background:#eef2f6;border-radius:6px;padding:10px;text-align:center"><div style="font-size:10px;color:#687386">Recall</div><div style="font-size:18px;font-weight:800;color:#172033">${(ev.recall*100).toFixed(1)}%</div></div>
+          <div style="background:#eef2f6;border-radius:6px;padding:10px;text-align:center"><div style="font-size:10px;color:#687386">F1-Score</div><div style="font-size:18px;font-weight:800;color:#172033">${(ev.f1_score*100).toFixed(1)}%</div></div>
+          <div style="background:#eef2f6;border-radius:6px;padding:10px;text-align:center"><div style="font-size:10px;color:#687386">AUC</div><div style="font-size:18px;font-weight:800;color:#172033">${ev.auc ? (ev.auc*100).toFixed(1)+'%' : 'N/A'}</div></div>
+        </div>
+        <p style="font-size:11px;color:#687386;margin-top:4px">Matriz de Confusion:</p>
+        ${cmHTML}
+      </div>
+      <hr style="border:0;border-top:1px solid #e8edf3;margin:12px 0">
+      <div style="margin-bottom:10px">
+        <h3 style="font-size:14px;color:#172033;margin-bottom:8px">4. Reporte por Clase</h3>
+        <table style="border-collapse:collapse;margin:8px 0;font-size:12px;width:100%">
+          <tr><th style="padding:5px 8px;border:1px solid #dce3ec;background:#eef2f6;text-align:left">Clase</th><th style="padding:5px 8px;border:1px solid #dce3ec;background:#eef2f6;text-align:right">Precision</th><th style="padding:5px 8px;border:1px solid #dce3ec;background:#eef2f6;text-align:right">Recall</th><th style="padding:5px 8px;border:1px solid #dce3ec;background:#eef2f6;text-align:right">F1</th><th style="padding:5px 8px;border:1px solid #dce3ec;background:#eef2f6;text-align:right">Soporte</th></tr>
+          ${Object.entries(ev.reporte_clasificacion).filter(([k]) => !['accuracy','macro avg','weighted avg'].includes(k)).map(([cls, m]) => `
+            <tr>
+              <td style="padding:5px 8px;border:1px solid #dce3ec;font-weight:700">${cls}</td>
+              <td style="padding:5px 8px;border:1px solid #dce3ec;text-align:right">${(m.precision*100).toFixed(1)}%</td>
+              <td style="padding:5px 8px;border:1px solid #dce3ec;text-align:right">${(m.recall*100).toFixed(1)}%</td>
+              <td style="padding:5px 8px;border:1px solid #dce3ec;text-align:right">${(m['f1-score']*100).toFixed(1)}%</td>
+              <td style="padding:5px 8px;border:1px solid #dce3ec;text-align:right">${m.support}</td>
+            </tr>
+          `).join("")}
+          ${['macro avg','weighted avg'].map(avg => `
+            <tr style="background:#f8f9fb">
+              <td style="padding:5px 8px;border:1px solid #dce3ec;font-weight:700;font-style:italic">${avg}</td>
+              <td style="padding:5px 8px;border:1px solid #dce3ec;text-align:right">${(ev.reporte_clasificacion[avg].precision*100).toFixed(1)}%</td>
+              <td style="padding:5px 8px;border:1px solid #dce3ec;text-align:right">${(ev.reporte_clasificacion[avg].recall*100).toFixed(1)}%</td>
+              <td style="padding:5px 8px;border:1px solid #dce3ec;text-align:right">${(ev.reporte_clasificacion[avg]['f1-score']*100).toFixed(1)}%</td>
+              <td style="padding:5px 8px;border:1px solid #dce3ec;text-align:right">${ev.reporte_clasificacion[avg].support}</td>
+            </tr>
+          `).join("")}
+        </table>
+      </div>
+      <hr style="border:0;border-top:1px solid #e8edf3;margin:12px 0">
+      <div style="margin-bottom:6px">
+        <h3 style="font-size:14px;color:#172033;margin-bottom:8px">5. Graficos</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div><p style="font-size:11px;color:#687386;margin-bottom:4px">Distribucion de clases</p><img src="/static/distribucion_clases.png" style="width:100%;border:1px solid #dce3ec;border-radius:4px"></div>
+          <div><p style="font-size:11px;color:#687386;margin-bottom:4px">Feature Importance</p><img src="/static/feature_importance.png" style="width:100%;border:1px solid #dce3ec;border-radius:4px"></div>
+          <div><p style="font-size:11px;color:#687386;margin-bottom:4px">Matriz de Confusion</p><img src="/static/matriz_confusion.png" style="width:100%;border:1px solid #dce3ec;border-radius:4px"></div>
+        </div>
+      </div>
+    `;
+  } catch(e) {
+    content.innerHTML = `<div style="text-align:center;padding:30px;color:#c00"><h3>Error</h3><p>${escapeHTML(e.message)}</p><p style="margin-top:10px;font-size:12px;color:#687386">Ejecuta <code>python pipeline_ml.py</code> en la terminal primero.</p></div>`;
+  }
+}
+
+// ── NIVEL 2: Evaluador nuevo paciente ────────────────────────────────────
+function abrirEvaluador() {
+  document.getElementById("eval-panel").style.display = "block";
+  document.getElementById("eval-result").innerHTML = '';
+}
+
+async function ejecutarEvaluacion() {
+  const btn = document.querySelector('#eval-panel button[onclick="ejecutarEvaluacion()"]');
+  btn.textContent = '⏳ Analizando...';
+  btn.disabled = true;
+  const payload = {
+    categoria_imc: document.getElementById("ef-imc").value,
+    presion_arterial: document.getElementById("ef-presion").value,
+    duracion_sueno_horas: parseFloat(document.getElementById("ef-sueno").value),
+    nivel_estres: parseInt(document.getElementById("ef-estres").value),
+    frecuencia_cardiaca: parseInt(document.getElementById("ef-fc").value),
+    nivel_actividad_fisica: parseInt(document.getElementById("ef-actividad").value),
+    calidad_sueno: parseInt(document.getElementById("ef-calidad").value),
+  };
+  try {
+    const resp = await fetch("/api/predict", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload)
+    });
+    const data = await resp.json();
+    const predClass = data.prediccion.toLowerCase().includes('apnea') ? 'apnea'
+      : data.prediccion.toLowerCase().includes('insomnio') ? 'insomnio'
+      : data.prediccion.toLowerCase().includes('riesgo') ? 'riesgo' : 'ninguno';
+    const ICONO_PRED = {apnea:'🫁', insomnio:'😴', riesgo:'⚠️', ninguno:'✅'};
+    document.getElementById("eval-result").innerHTML = `
+      <div class="eval-result">
+        <div class="pred-chip ${predClass}">${ICONO_PRED[predClass]} ${escapeHTML(data.prediccion)} — Confianza: ${escapeHTML(data.confianza)}</div>
+        <p style="font-size:11.5px;color:#4b5563;margin-bottom:10px">${escapeHTML(data.explicacion)}</p>
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;color:#687386;margin-bottom:6px">🔔 Alertas Clínicas Detectadas</div>
+        ${renderAlertas(data.alertas)}
+      </div>`;
+  } catch(e) {
+    document.getElementById("eval-result").innerHTML = `<div style="color:#c00;font-size:12px;margin-top:10px">Error: ${escapeHTML(e.message)}</div>`;
+  } finally {
+    btn.textContent = '🔍 Analizar Riesgo Clínico';
+    btn.disabled = false;
+  }
+}
+
+async function init() {
+  // Eventos de modales — siempre registrados
+  document.getElementById("btn-ml-close").onclick = () => {
+    document.getElementById("ml-panel").style.display = "none";
+  };
+  document.getElementById("ml-panel").onclick = (e) => {
+    if (e.target === e.currentTarget) document.getElementById("ml-panel").style.display = "none";
+  };
+  document.getElementById("btn-eval-close").onclick = () => {
+    document.getElementById("eval-panel").style.display = "none";
+  };
+  document.getElementById("eval-panel").onclick = (e) => {
+    if (e.target === e.currentTarget) document.getElementById("eval-panel").style.display = "none";
+  };
+
+  try {
+    const resp = await fetch("/api/data");
+    if (!resp.ok) throw new Error("Error " + resp.status);
+    DATA = await resp.json();
+    document.getElementById("data-summary").textContent =
+      `${DATA.registros.length} usuarios · ${DATA.feature_cols.length} dims · PCA/t-SNE/UMAP`;
+    populateSelects();
+    drawLegend();
+    document.getElementById("select-tech").onchange = () => {
+      drawScatter();
+      updateDetails(selectedRecord());
+    };
+    document.getElementById("select-bar-tech").onchange = drawBarChart;
+    window.addEventListener("resize", redrawAll);
+    redrawAll();
+  } catch(e) {
+    document.getElementById("data-summary").textContent = "Error al cargar datos";
+    console.error("Error cargando datos:", e.message);
+  }
+}
+
+init();
+</script>
+</body>
+</html>

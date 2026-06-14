@@ -1,0 +1,375 @@
+﻿id_persona,embedding_1,embedding_2,trastorno_sueno,tiene_trastorno_sueno,calidad_sueno_nivel,estres_nivel
+1,-0.393904,0.682285,Ninguno,0,Medio,Medio
+2,-0.573326,1.219666,Ninguno,0,Medio,Alto
+3,-0.573326,1.219666,Ninguno,0,Medio,Alto
+4,1.092589,1.299005,Apnea del sueño,1,Bajo,Alto
+5,1.092589,1.299005,Apnea del sueño,1,Bajo,Alto
+6,0.890956,1.573441,Insomnio,1,Bajo,Alto
+7,0.827303,1.144027,Insomnio,1,Medio,Alto
+8,-0.833356,0.578908,Ninguno,0,Medio,Medio
+9,-0.833356,0.578908,Ninguno,0,Medio,Medio
+10,-0.833356,0.578908,Ninguno,0,Medio,Medio
+11,-0.693535,1.24738,Ninguno,0,Medio,Alto
+12,-0.833356,0.578908,Ninguno,0,Medio,Medio
+13,-0.693535,1.24738,Ninguno,0,Medio,Alto
+14,-0.688663,1.257126,Ninguno,0,Medio,Alto
+15,-0.688663,1.257126,Ninguno,0,Medio,Alto
+16,-0.688663,1.257126,Ninguno,0,Medio,Alto
+17,1.206223,0.444838,Apnea del sueño,1,Bajo,Alto
+18,0.174956,1.190713,Apnea del sueño,1,Medio,Alto
+19,1.015923,0.719882,Insomnio,1,Bajo,Alto
+20,-0.818493,0.591706,Ninguno,0,Medio,Medio
+21,-0.823364,0.581961,Ninguno,0,Medio,Medio
+22,-0.823364,0.581961,Ninguno,0,Medio,Medio
+23,-0.823364,0.581961,Ninguno,0,Medio,Medio
+24,-0.823364,0.581961,Ninguno,0,Medio,Medio
+25,-0.828236,0.572215,Ninguno,0,Medio,Medio
+26,-0.833107,0.56247,Ninguno,0,Medio,Medio
+27,-0.828236,0.572215,Ninguno,0,Medio,Medio
+28,-0.833107,0.56247,Ninguno,0,Medio,Medio
+29,-0.833107,0.56247,Ninguno,0,Medio,Medio
+30,-0.833107,0.56247,Ninguno,0,Medio,Medio
+31,1.164629,0.446863,Apnea del sueño,1,Bajo,Alto
+32,0.974329,0.721906,Insomnio,1,Bajo,Alto
+33,-0.390525,-0.826138,Ninguno,0,Alto,Bajo
+34,-0.640924,1.248541,Ninguno,0,Medio,Alto
+35,-0.818244,0.575268,Ninguno,0,Medio,Medio
+36,-0.640924,1.248541,Ninguno,0,Medio,Alto
+37,-0.640924,1.248541,Ninguno,0,Medio,Alto
+38,-0.813372,0.585013,Ninguno,0,Medio,Medio
+39,-0.813372,0.585013,Ninguno,0,Medio,Medio
+40,-0.813372,0.585013,Ninguno,0,Medio,Medio
+41,-0.818244,0.575268,Ninguno,0,Medio,Medio
+42,-0.818244,0.575268,Ninguno,0,Medio,Medio
+43,-0.818244,0.575268,Ninguno,0,Medio,Medio
+44,-0.823115,0.565523,Ninguno,0,Medio,Medio
+45,-0.818244,0.575268,Ninguno,0,Medio,Medio
+46,-0.823115,0.565523,Ninguno,0,Medio,Medio
+47,-0.818244,0.575268,Ninguno,0,Medio,Medio
+48,-0.823115,0.565523,Ninguno,0,Medio,Medio
+49,-0.818244,0.575268,Ninguno,0,Medio,Medio
+50,0.045376,0.508855,Apnea del sueño,1,Medio,Medio
+51,-1.059346,-0.421676,Ninguno,0,Alto,Bajo
+52,-1.059346,-0.421676,Ninguno,0,Alto,Bajo
+53,-0.630932,1.251593,Ninguno,0,Medio,Alto
+54,-0.808252,0.578321,Ninguno,0,Medio,Medio
+55,-0.630932,1.251593,Ninguno,0,Medio,Alto
+56,-0.630932,1.251593,Ninguno,0,Medio,Alto
+57,-0.813124,0.568575,Ninguno,0,Medio,Medio
+58,-0.630932,1.251593,Ninguno,0,Medio,Alto
+59,-0.630932,1.251593,Ninguno,0,Medio,Alto
+60,-0.813124,0.568575,Ninguno,0,Medio,Medio
+61,-0.630932,1.251593,Ninguno,0,Medio,Alto
+62,-0.630932,1.251593,Ninguno,0,Medio,Alto
+63,-0.640675,1.232103,Ninguno,0,Medio,Alto
+64,-0.640675,1.232103,Ninguno,0,Medio,Alto
+65,-0.640675,1.232103,Ninguno,0,Medio,Alto
+66,-0.640675,1.232103,Ninguno,0,Medio,Alto
+67,-0.916004,0.156231,Ninguno,0,Alto,Medio
+68,0.047508,1.453531,Insomnio,1,Medio,Alto
+69,-0.049707,0.17404,Ninguno,0,Medio,Medio
+70,-0.049707,0.17404,Ninguno,0,Medio,Medio
+71,-0.630683,1.235155,Ninguno,0,Medio,Alto
+72,-0.630683,1.235155,Ninguno,0,Medio,Alto
+73,-0.630683,1.235155,Ninguno,0,Medio,Alto
+74,-0.630683,1.235155,Ninguno,0,Medio,Alto
+75,-0.625812,1.244901,Ninguno,0,Medio,Alto
+76,-0.625812,1.244901,Ninguno,0,Medio,Alto
+77,-0.625812,1.244901,Ninguno,0,Medio,Alto
+78,-0.625812,1.244901,Ninguno,0,Medio,Alto
+79,-0.625812,1.244901,Ninguno,0,Medio,Alto
+80,-0.625812,1.244901,Ninguno,0,Medio,Alto
+81,1.084245,0.808038,Apnea del sueño,1,Bajo,Alto
+82,1.084245,0.808038,Apnea del sueño,1,Bajo,Alto
+83,-0.345745,0.353723,Ninguno,0,Medio,Medio
+84,-0.345745,0.353723,Ninguno,0,Medio,Medio
+85,-0.760179,0.098527,Ninguno,0,Alto,Medio
+86,-0.797147,-0.681342,Ninguno,0,Alto,Bajo
+87,-0.974956,-0.390622,Ninguno,0,Alto,Bajo
+88,-0.974956,-0.390622,Ninguno,0,Alto,Bajo
+89,-0.979828,-0.400368,Ninguno,0,Alto,Bajo
+90,-0.979828,-0.400368,Ninguno,0,Alto,Bajo
+91,-0.979828,-0.400368,Ninguno,0,Alto,Bajo
+92,-0.979828,-0.400368,Ninguno,0,Alto,Bajo
+93,-0.760179,0.098527,Ninguno,0,Alto,Medio
+94,0.680376,0.319347,Apnea del sueño,1,Medio,Medio
+95,-0.118707,-0.479405,Insomnio,1,Alto,Bajo
+96,-0.787155,-0.678289,Ninguno,0,Alto,Bajo
+97,-0.792027,-0.688035,Ninguno,0,Alto,Bajo
+98,-0.787155,-0.678289,Ninguno,0,Alto,Bajo
+99,-0.656979,-0.630729,Ninguno,0,Alto,Bajo
+100,-0.656979,-0.630729,Ninguno,0,Alto,Bajo
+101,-0.661851,-0.640475,Ninguno,0,Alto,Bajo
+102,-0.661851,-0.640475,Ninguno,0,Alto,Bajo
+103,-0.661851,-0.640475,Ninguno,0,Alto,Bajo
+104,0.750466,0.936433,Apnea del sueño,1,Bajo,Alto
+105,0.201769,-0.706888,Apnea del sueño,1,Alto,Bajo
+106,0.560166,1.211476,Insomnio,1,Bajo,Alto
+107,0.233937,0.020636,Ninguno,0,Medio,Medio
+108,-1.004392,-0.458061,Ninguno,0,Alto,Bajo
+109,-1.004392,-0.458061,Ninguno,0,Alto,Bajo
+110,-0.656003,0.059717,Ninguno,0,Alto,Medio
+111,-0.786907,-0.694728,Ninguno,0,Alto,Bajo
+112,-0.656003,0.059717,Ninguno,0,Alto,Medio
+113,-0.786907,-0.694728,Ninguno,0,Alto,Bajo
+114,-0.656003,0.059717,Ninguno,0,Alto,Medio
+115,-0.786907,-0.694728,Ninguno,0,Alto,Bajo
+116,-0.786907,-0.694728,Ninguno,0,Alto,Bajo
+117,-0.786907,-0.694728,Ninguno,0,Alto,Bajo
+118,-0.786907,-0.694728,Ninguno,0,Alto,Bajo
+119,-0.786907,-0.694728,Ninguno,0,Alto,Bajo
+120,-0.786907,-0.694728,Ninguno,0,Alto,Bajo
+121,-0.786907,-0.694728,Ninguno,0,Alto,Bajo
+122,-0.786907,-0.694728,Ninguno,0,Alto,Bajo
+123,-0.786907,-0.694728,Ninguno,0,Alto,Bajo
+124,-0.786907,-0.694728,Ninguno,0,Alto,Bajo
+125,-0.786907,-0.694728,Ninguno,0,Alto,Bajo
+126,-0.260109,-0.811418,Ninguno,0,Alto,Bajo
+127,-0.646011,0.06277,Ninguno,0,Alto,Medio
+128,-0.776914,-0.691675,Ninguno,0,Alto,Bajo
+129,-0.646011,0.06277,Ninguno,0,Alto,Medio
+130,-0.646011,0.06277,Ninguno,0,Alto,Medio
+131,-0.776914,-0.691675,Ninguno,0,Alto,Bajo
+132,-0.646011,0.06277,Ninguno,0,Alto,Medio
+133,-0.646011,0.06277,Ninguno,0,Alto,Medio
+134,-0.776914,-0.691675,Ninguno,0,Alto,Bajo
+135,-0.646011,0.06277,Ninguno,0,Alto,Medio
+136,-0.646011,0.06277,Ninguno,0,Alto,Medio
+137,-0.776914,-0.691675,Ninguno,0,Alto,Bajo
+138,-0.636268,0.082261,Ninguno,0,Alto,Medio
+139,-0.776914,-0.691675,Ninguno,0,Alto,Bajo
+140,-0.636268,0.082261,Ninguno,0,Alto,Medio
+141,-0.776914,-0.691675,Ninguno,0,Alto,Bajo
+142,-0.636268,0.082261,Ninguno,0,Alto,Medio
+143,-0.776914,-0.691675,Ninguno,0,Alto,Bajo
+144,-0.776914,-0.691675,Ninguno,0,Alto,Bajo
+145,0.227352,0.015848,Apnea del sueño,1,Alto,Medio
+146,0.9371,-0.128231,Apnea del sueño,1,Medio,Medio
+147,0.037301,0.274453,Insomnio,1,Alto,Medio
+148,0.467134,1.076991,Insomnio,1,Bajo,Alto
+149,-0.296666,-0.005079,Ninguno,0,Medio,Medio
+150,-0.779541,-0.961409,Ninguno,0,Alto,Bajo
+151,-0.779541,-0.961409,Ninguno,0,Alto,Bajo
+152,-0.636019,0.065822,Ninguno,0,Alto,Medio
+153,-0.636019,0.065822,Ninguno,0,Alto,Medio
+154,-0.636019,0.065822,Ninguno,0,Alto,Medio
+155,-0.636019,0.065822,Ninguno,0,Alto,Medio
+156,-0.636019,0.065822,Ninguno,0,Alto,Medio
+157,-0.636019,0.065822,Ninguno,0,Alto,Medio
+158,-0.636019,0.065822,Ninguno,0,Alto,Medio
+159,-0.636019,0.065822,Ninguno,0,Alto,Medio
+160,-0.636019,0.065822,Ninguno,0,Alto,Medio
+161,-0.636019,0.065822,Ninguno,0,Alto,Medio
+162,-0.576462,-0.303917,Ninguno,0,Alto,Medio
+163,-0.576462,-0.303917,Ninguno,0,Alto,Medio
+164,-0.619307,-0.057236,Ninguno,0,Alto,Medio
+165,-0.619307,-0.057236,Ninguno,0,Alto,Medio
+166,0.082719,0.187082,Insomnio,1,Alto,Medio
+167,-0.844005,-0.02756,Ninguno,0,Alto,Medio
+168,-0.48666,0.385016,Ninguno,0,Medio,Medio
+169,-0.48666,0.385016,Ninguno,0,Medio,Medio
+170,-0.595472,-0.031294,Ninguno,0,Alto,Medio
+171,-0.595472,-0.031294,Ninguno,0,Alto,Medio
+172,-0.595472,-0.031294,Ninguno,0,Alto,Medio
+173,-0.595472,-0.031294,Ninguno,0,Alto,Medio
+174,-0.595472,-0.031294,Ninguno,0,Alto,Medio
+175,-0.590601,-0.021549,Ninguno,0,Alto,Medio
+176,-0.590601,-0.021549,Ninguno,0,Alto,Medio
+177,-0.590601,-0.021549,Ninguno,0,Alto,Medio
+178,0.550312,1.142751,Insomnio,1,Medio,Alto
+179,-0.595224,-0.047732,Ninguno,0,Alto,Medio
+180,-0.595224,-0.047732,Ninguno,0,Alto,Medio
+181,-0.595224,-0.047732,Ninguno,0,Alto,Medio
+182,-0.595224,-0.047732,Ninguno,0,Alto,Medio
+183,-0.595224,-0.047732,Ninguno,0,Alto,Medio
+184,-0.595224,-0.047732,Ninguno,0,Alto,Medio
+185,0.991385,0.27533,Apnea del sueño,1,Medio,Alto
+186,0.991385,0.27533,Apnea del sueño,1,Medio,Alto
+187,0.673408,-0.283051,Insomnio,1,Medio,Bajo
+188,0.565175,1.15555,Insomnio,1,Medio,Alto
+189,0.673408,-0.283051,Insomnio,1,Medio,Bajo
+190,0.555432,1.136059,Insomnio,1,Medio,Alto
+191,0.673408,-0.283051,Insomnio,1,Medio,Bajo
+192,0.560304,1.145804,Insomnio,1,Medio,Alto
+193,0.555432,1.136059,Insomnio,1,Medio,Alto
+194,0.555432,1.136059,Insomnio,1,Medio,Alto
+195,0.555432,1.136059,Insomnio,1,Medio,Alto
+196,0.555432,1.136059,Insomnio,1,Medio,Alto
+197,0.555432,1.136059,Insomnio,1,Medio,Alto
+198,0.555432,1.136059,Insomnio,1,Medio,Alto
+199,0.555432,1.136059,Insomnio,1,Medio,Alto
+200,0.555432,1.136059,Insomnio,1,Medio,Alto
+201,0.555432,1.136059,Insomnio,1,Medio,Alto
+202,0.009493,-0.030393,Insomnio,1,Alto,Medio
+203,0.009493,-0.030393,Insomnio,1,Alto,Medio
+204,-0.759657,0.558455,Ninguno,0,Medio,Alto
+205,-0.807016,-0.473939,Ninguno,0,Alto,Bajo
+206,-0.658955,-0.229278,Ninguno,0,Alto,Medio
+207,-0.658955,-0.229278,Ninguno,0,Alto,Medio
+208,-0.658955,-0.229278,Ninguno,0,Alto,Medio
+209,-0.658955,-0.229278,Ninguno,0,Alto,Medio
+210,-0.663827,-0.239023,Ninguno,0,Alto,Medio
+211,-0.658955,-0.229278,Ninguno,0,Alto,Medio
+212,-0.663827,-0.239023,Ninguno,0,Alto,Medio
+213,-0.663827,-0.239023,Ninguno,0,Alto,Medio
+214,-0.663827,-0.239023,Ninguno,0,Alto,Medio
+215,-0.663827,-0.239023,Ninguno,0,Alto,Medio
+216,-0.663827,-0.239023,Ninguno,0,Alto,Medio
+217,-0.663827,-0.239023,Ninguno,0,Alto,Medio
+218,-0.663827,-0.239023,Ninguno,0,Alto,Medio
+219,0.199793,-0.305436,Apnea del sueño,1,Alto,Medio
+220,0.745732,0.861015,Apnea del sueño,1,Medio,Alto
+221,0.6834,-0.279998,Insomnio,1,Medio,Bajo
+222,0.565424,1.139111,Insomnio,1,Medio,Alto
+223,0.570296,1.148857,Insomnio,1,Medio,Alto
+224,0.565424,1.139111,Insomnio,1,Medio,Alto
+225,0.6834,-0.279998,Insomnio,1,Medio,Bajo
+226,0.570296,1.148857,Insomnio,1,Medio,Alto
+227,0.6834,-0.279998,Insomnio,1,Medio,Bajo
+228,0.570296,1.148857,Insomnio,1,Medio,Alto
+229,0.6834,-0.279998,Insomnio,1,Medio,Bajo
+230,0.570296,1.148857,Insomnio,1,Medio,Alto
+231,0.6834,-0.279998,Insomnio,1,Medio,Bajo
+232,0.570296,1.148857,Insomnio,1,Medio,Alto
+233,0.6834,-0.279998,Insomnio,1,Medio,Bajo
+234,0.570296,1.148857,Insomnio,1,Medio,Alto
+235,0.6834,-0.279998,Insomnio,1,Medio,Bajo
+236,0.570296,1.148857,Insomnio,1,Medio,Alto
+237,0.565424,1.139111,Insomnio,1,Medio,Alto
+238,0.688272,-0.270253,Insomnio,1,Medio,Bajo
+239,0.570296,1.148857,Insomnio,1,Medio,Alto
+240,0.565424,1.139111,Insomnio,1,Medio,Alto
+241,0.688272,-0.270253,Insomnio,1,Medio,Bajo
+242,0.570296,1.148857,Insomnio,1,Medio,Alto
+243,0.565424,1.139111,Insomnio,1,Medio,Alto
+244,0.688272,-0.270253,Insomnio,1,Medio,Bajo
+245,0.570296,1.148857,Insomnio,1,Medio,Alto
+246,0.688272,-0.270253,Insomnio,1,Medio,Bajo
+247,0.570296,1.148857,Insomnio,1,Medio,Alto
+248,0.332263,0.765772,Insomnio,1,Medio,Alto
+249,-0.107896,0.930481,Ninguno,0,Medio,Alto
+250,-0.112767,0.920736,Ninguno,0,Medio,Alto
+251,0.763335,0.097157,Insomnio,1,Medio,Medio
+252,0.763335,0.097157,Insomnio,1,Medio,Medio
+253,0.693392,-0.276946,Insomnio,1,Medio,Bajo
+254,0.693392,-0.276946,Insomnio,1,Medio,Bajo
+255,0.693392,-0.276946,Insomnio,1,Medio,Bajo
+256,0.693392,-0.276946,Insomnio,1,Medio,Bajo
+257,0.688521,-0.286691,Insomnio,1,Medio,Bajo
+258,0.688521,-0.286691,Insomnio,1,Medio,Bajo
+259,0.688521,-0.286691,Insomnio,1,Medio,Bajo
+260,0.688521,-0.286691,Insomnio,1,Medio,Bajo
+261,0.688521,-0.286691,Insomnio,1,Medio,Bajo
+262,0.015201,-0.495321,Ninguno,0,Medio,Bajo
+263,0.015201,-0.495321,Ninguno,0,Medio,Bajo
+264,-0.142136,-0.116642,Ninguno,0,Medio,Medio
+265,0.625315,0.722018,Insomnio,1,Medio,Medio
+266,1.694099,0.135124,Apnea del sueño,1,Medio,Alto
+267,0.625315,0.722018,Insomnio,1,Medio,Medio
+268,0.820985,0.165608,Ninguno,0,Medio,Alto
+269,1.694348,0.118685,Apnea del sueño,1,Medio,Alto
+270,1.689476,0.10894,Apnea del sueño,1,Medio,Alto
+271,1.689476,0.10894,Apnea del sueño,1,Medio,Alto
+272,1.689476,0.10894,Apnea del sueño,1,Medio,Alto
+273,1.689476,0.10894,Apnea del sueño,1,Medio,Alto
+274,1.684605,0.099195,Apnea del sueño,1,Medio,Alto
+275,1.684605,0.099195,Apnea del sueño,1,Medio,Alto
+276,1.684605,0.099195,Apnea del sueño,1,Medio,Alto
+277,0.574394,-0.256223,Apnea del sueño,1,Alto,Bajo
+278,0.574394,-0.256223,Apnea del sueño,1,Alto,Bajo
+279,1.504297,0.37729,Insomnio,1,Medio,Alto
+280,-0.794804,-1.106308,Ninguno,0,Alto,Bajo
+281,0.835849,0.178406,Ninguno,0,Medio,Alto
+282,1.694597,0.102247,Apnea del sueño,1,Medio,Alto
+283,1.699468,0.111993,Apnea del sueño,1,Medio,Alto
+284,1.699468,0.111993,Apnea del sueño,1,Medio,Alto
+285,1.699468,0.111993,Apnea del sueño,1,Medio,Alto
+286,1.699468,0.111993,Apnea del sueño,1,Medio,Alto
+287,1.699468,0.111993,Apnea del sueño,1,Medio,Alto
+288,1.699468,0.111993,Apnea del sueño,1,Medio,Alto
+289,1.699468,0.111993,Apnea del sueño,1,Medio,Alto
+290,1.694597,0.102247,Apnea del sueño,1,Medio,Alto
+291,1.699468,0.111993,Apnea del sueño,1,Medio,Alto
+292,1.694597,0.102247,Apnea del sueño,1,Medio,Alto
+293,1.694597,0.102247,Apnea del sueño,1,Medio,Alto
+294,1.699468,0.111993,Apnea del sueño,1,Medio,Alto
+295,1.694597,0.102247,Apnea del sueño,1,Medio,Alto
+296,1.699468,0.111993,Apnea del sueño,1,Medio,Alto
+297,1.694597,0.102247,Apnea del sueño,1,Medio,Alto
+298,1.694597,0.102247,Apnea del sueño,1,Medio,Alto
+299,-0.799427,-1.132492,Ninguno,0,Alto,Bajo
+300,-0.799427,-1.132492,Ninguno,0,Alto,Bajo
+301,-0.799427,-1.132492,Ninguno,0,Alto,Bajo
+302,-0.799427,-1.132492,Ninguno,0,Alto,Bajo
+303,0.090813,-0.290549,Ninguno,0,Medio,Medio
+304,1.704589,0.1053,Apnea del sueño,1,Medio,Alto
+305,1.699717,0.095554,Apnea del sueño,1,Medio,Alto
+306,1.699717,0.095554,Apnea del sueño,1,Medio,Alto
+307,0.69741,0.372221,Insomnio,1,Medio,Alto
+308,0.69741,0.372221,Insomnio,1,Medio,Alto
+309,0.692538,0.362475,Insomnio,1,Medio,Alto
+310,0.692538,0.362475,Insomnio,1,Medio,Alto
+311,0.692538,0.362475,Insomnio,1,Medio,Alto
+312,0.692538,0.362475,Insomnio,1,Medio,Alto
+313,-0.789435,-1.129439,Ninguno,0,Alto,Bajo
+314,-0.789435,-1.129439,Ninguno,0,Alto,Bajo
+315,-0.789435,-1.129439,Ninguno,0,Alto,Bajo
+316,-0.106123,-0.917756,Insomnio,1,Alto,Bajo
+317,-0.789186,-1.145877,Ninguno,0,Alto,Bajo
+318,-0.789186,-1.145877,Ninguno,0,Alto,Bajo
+319,-0.784315,-1.136132,Ninguno,0,Alto,Bajo
+320,-0.784315,-1.136132,Ninguno,0,Alto,Bajo
+321,-0.789186,-1.145877,Ninguno,0,Alto,Bajo
+322,-0.784315,-1.136132,Ninguno,0,Alto,Bajo
+323,-0.784315,-1.136132,Ninguno,0,Alto,Bajo
+324,-0.789186,-1.145877,Ninguno,0,Alto,Bajo
+325,-0.779443,-1.126387,Ninguno,0,Alto,Bajo
+326,-0.789186,-1.145877,Ninguno,0,Alto,Bajo
+327,-0.779443,-1.126387,Ninguno,0,Alto,Bajo
+328,-0.789186,-1.145877,Ninguno,0,Alto,Bajo
+329,-0.779443,-1.126387,Ninguno,0,Alto,Bajo
+330,-0.789186,-1.145877,Ninguno,0,Alto,Bajo
+331,-0.789186,-1.145877,Ninguno,0,Alto,Bajo
+332,-0.784315,-1.136132,Ninguno,0,Alto,Bajo
+333,-0.779194,-1.142825,Ninguno,0,Alto,Bajo
+334,-0.779194,-1.142825,Ninguno,0,Alto,Bajo
+335,-0.779194,-1.142825,Ninguno,0,Alto,Bajo
+336,-0.779194,-1.142825,Ninguno,0,Alto,Bajo
+337,-0.779194,-1.142825,Ninguno,0,Alto,Bajo
+338,-0.779194,-1.142825,Ninguno,0,Alto,Bajo
+339,-0.784066,-1.15257,Ninguno,0,Alto,Bajo
+340,1.225499,-1.152618,Apnea del sueño,1,Alto,Bajo
+341,1.225499,-1.152618,Apnea del sueño,1,Alto,Bajo
+342,-0.785567,-0.804567,Ninguno,0,Alto,Bajo
+343,-0.785567,-0.804567,Ninguno,0,Alto,Bajo
+344,0.345055,-1.207615,Ninguno,0,Alto,Bajo
+345,1.203803,-1.283774,Apnea del sueño,1,Alto,Bajo
+346,1.203803,-1.283774,Apnea del sueño,1,Alto,Bajo
+347,1.203803,-1.283774,Apnea del sueño,1,Alto,Bajo
+348,1.203803,-1.283774,Apnea del sueño,1,Alto,Bajo
+349,1.203803,-1.283774,Apnea del sueño,1,Alto,Bajo
+350,1.208674,-1.274028,Apnea del sueño,1,Alto,Bajo
+351,1.208674,-1.274028,Apnea del sueño,1,Alto,Bajo
+352,1.208674,-1.274028,Apnea del sueño,1,Alto,Bajo
+353,1.218666,-1.270976,Apnea del sueño,1,Alto,Bajo
+354,1.218666,-1.270976,Apnea del sueño,1,Alto,Bajo
+355,1.218666,-1.270976,Apnea del sueño,1,Alto,Bajo
+356,1.218666,-1.270976,Apnea del sueño,1,Alto,Bajo
+357,1.218666,-1.270976,Apnea del sueño,1,Alto,Bajo
+358,1.218666,-1.270976,Apnea del sueño,1,Alto,Bajo
+359,0.360167,-1.211256,Ninguno,0,Alto,Bajo
+360,0.355295,-1.221001,Ninguno,0,Alto,Bajo
+361,1.214043,-1.29716,Apnea del sueño,1,Alto,Bajo
+362,1.214043,-1.29716,Apnea del sueño,1,Alto,Bajo
+363,1.214043,-1.29716,Apnea del sueño,1,Alto,Bajo
+364,1.214043,-1.29716,Apnea del sueño,1,Alto,Bajo
+365,1.223786,-1.277669,Apnea del sueño,1,Alto,Bajo
+366,1.223786,-1.277669,Apnea del sueño,1,Alto,Bajo
+367,1.218915,-1.287414,Apnea del sueño,1,Alto,Bajo
+368,1.223786,-1.277669,Apnea del sueño,1,Alto,Bajo
+369,1.218915,-1.287414,Apnea del sueño,1,Alto,Bajo
+370,1.218915,-1.287414,Apnea del sueño,1,Alto,Bajo
+371,1.223786,-1.277669,Apnea del sueño,1,Alto,Bajo
+372,1.218915,-1.287414,Apnea del sueño,1,Alto,Bajo
+373,1.218915,-1.287414,Apnea del sueño,1,Alto,Bajo
+374,1.218915,-1.287414,Apnea del sueño,1,Alto,Bajo

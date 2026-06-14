@@ -1,0 +1,128 @@
+{
+  "eda": {
+    "total_muestras": 374,
+    "conteo_clases": {
+      "Ninguno": 219,
+      "Apnea del sueño": 78,
+      "Insomnio": 77
+    },
+    "proporcion_clases": {
+      "Ninguno": 0.5856,
+      "Apnea del sueño": 0.2086,
+      "Insomnio": 0.2059
+    },
+    "clase_mayoritaria": "Ninguno",
+    "clase_minoritaria": "Insomnio",
+    "desbalance_ratio": 2.84
+  },
+  "preprocesamiento": {
+    "features_originales": 24,
+    "train_size": 299,
+    "test_size": 75,
+    "smoteenn_clases_resultantes": {
+      "1": 139,
+      "2": 127,
+      "0": 104
+    }
+  },
+  "seleccion_variables": {
+    "metodo": "GradientBoostingRegressor",
+    "top_n": 5,
+    "features": [
+      {
+        "posicion": 1,
+        "feature": "categoria_imc_ordinal_norm",
+        "importancia": 0.7322
+      },
+      {
+        "posicion": 2,
+        "feature": "nivel_actividad_fisica_norm",
+        "importancia": 0.2218
+      },
+      {
+        "posicion": 3,
+        "feature": "ocupacion_Ingeniero/a",
+        "importancia": 0.0078
+      },
+      {
+        "posicion": 4,
+        "feature": "calidad_sueno_norm",
+        "importancia": 0.0066
+      },
+      {
+        "posicion": 5,
+        "feature": "presion_diastolica_norm",
+        "importancia": 0.0066
+      }
+    ]
+  },
+  "modelo": {
+    "tipo": "GradientBoostingClassifier",
+    "hiperparametros": {
+      "n_estimators": 200,
+      "max_depth": 3
+    }
+  },
+  "evaluacion": {
+    "accuracy": 0.8667,
+    "precision": 0.8732,
+    "recall": 0.8667,
+    "f1_score": 0.8691,
+    "auc": 0.9308,
+    "matriz_confusion": [
+      [
+        13,
+        2,
+        1
+      ],
+      [
+        2,
+        12,
+        1
+      ],
+      [
+        1,
+        3,
+        40
+      ]
+    ],
+    "etiquetas_clases": [
+      "Apnea del sueño",
+      "Insomnio",
+      "Ninguno"
+    ],
+    "reporte_clasificacion": {
+      "Apnea del sueño": {
+        "precision": 0.8125,
+        "recall": 0.8125,
+        "f1-score": 0.8125,
+        "support": 16.0
+      },
+      "Insomnio": {
+        "precision": 0.7058823529411765,
+        "recall": 0.8,
+        "f1-score": 0.75,
+        "support": 15.0
+      },
+      "Ninguno": {
+        "precision": 0.9523809523809523,
+        "recall": 0.9090909090909091,
+        "f1-score": 0.9302325581395349,
+        "support": 44.0
+      },
+      "accuracy": 0.8666666666666667,
+      "macro avg": {
+        "precision": 0.8235877684407097,
+        "recall": 0.840530303030303,
+        "f1-score": 0.8309108527131782,
+        "support": 75.0
+      },
+      "weighted avg": {
+        "precision": 0.8732399626517273,
+        "recall": 0.8666666666666667,
+        "f1-score": 0.8690697674418605,
+        "support": 75.0
+      }
+    }
+  }
+}
